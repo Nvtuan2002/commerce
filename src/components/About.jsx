@@ -1,7 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import about from '../assets/images/about.png'
 
 const About = () => {
+    
     return (
         <div>
             <div className="container py-5 my-5">
@@ -35,7 +37,7 @@ const About = () => {
                         <Link to="/contact" className="btn btn-outline-primary px-3">Contact Us</Link>
                     </div>
                     <div className="col-md-6 d-flex justify-content-center">
-                        <img src="src\assets\images\contact.png" alt="About Us" height="400px" width="400px" />
+                        <img src={about} alt="About Us" height="400px" width="400px" />
                     </div>
                 </div>
             </div>

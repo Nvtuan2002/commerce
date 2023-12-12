@@ -1,5 +1,9 @@
 import React from 'react'
 import Products from './Products'
+import slide1 from '../assets/images/home/img1.jpg'
+import slide2 from '../assets/images/home/img2.jpg'
+import slide3 from '../assets/images/home/img3.jpg'
+import slide4 from '../assets/images/home/img4.jpg'
 
 const Home = () => {
     return (
@@ -13,16 +17,16 @@ const Home = () => {
                 </div>
                 <div className="carousel-inner">
                     <div className="carousel-item active">
-                        <img src="src/assets/images/home/img1.jpg" className="d-block w-100" alt="IPhone" height="500px" />
+                        <img src={slide1} className="d-block w-100" alt="IPhone" height="500px" />
                     </div>
                     <div className="carousel-item">
-                        <img src="src/assets/images/home/img2.jpg" className="d-block w-100" alt="IPhone" height="500px" />
+                        <img src={slide2} className="d-block w-100" alt="IPhone" height="500px" />
                     </div>
                     <div className="carousel-item">
-                        <img src="src/assets/images/home/img3.jpg" className="d-block w-100" alt="IPhone" height="500px" />
+                        <img src={slide3} className="d-block w-100" alt="IPhone" height="500px" />
                     </div>
                     <div className="carousel-item">
-                        <img src="src/assets/images/home/img4.jpg" className="d-block w-100" alt="IPhone" height="500px" />
+                        <img src={slide4} className="d-block w-100" alt="IPhone" height="500px" />
                     </div>
                 </div>
                 <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
