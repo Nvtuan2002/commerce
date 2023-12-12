@@ -35,7 +35,7 @@ const About = () => {
                         <Link to="/contact" className="btn btn-outline-primary px-3">Contact Us</Link>
                     </div>
                     <div className="col-md-6 d-flex justify-content-center">
-                        <img src="public/assets/images/about.png" alt="About Us" height="400px" width="400px" />
+                        <img src="src\assets\images\contact.png" alt="About Us" height="400px" width="400px" />
                     </div>
                 </div>
             </div>
