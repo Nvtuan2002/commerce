@@ -1,14 +1,12 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { qtyItem, deleteItem } from '../redux/Cart';
 import { Link } from 'react-router-dom'
-import { debounce, min } from "lodash";
+import { debounce } from "lodash";
 
 const Cart = () => {
     const state = useSelector((state) => state.cart);
     const dispatch = useDispatch()
-    console.log(state);
 
     const handleClose = (item) => {
         dispatch(deleteItem(item))
@@ -16,7 +14,6 @@ const Cart = () => {
 
     const editqty = debounce((item) => {
         dispatch(qtyItem(item))
-        window.location.reload()
     }, 1000);
 
     const emptyCart = () => {
