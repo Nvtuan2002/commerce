@@ -1,36 +1,21 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton'
 import { useDispatch } from 'react-redux';
 import { addItem, deleteItem } from '../redux/Cart';
+import { getProduct } from '../services/products';
 
 
 const Product = () => {
 
     const { id } = useParams()
-    const [product, setProduct] = useState([])
-    const [loading, setLoading] = useState(false)
-
+    const { loading, product } = getProduct(id)
     const dispatch = useDispatch()
 
     const addProduct = (product) => {
         dispatch(addItem(product))
-
     }
-
-    useEffect(() => {
-        const getProdut = async () => {
-            setLoading(true)
-            const res = await fetch(`https://fakestoreapi.com/products/${id}`)
-            const data = await res.json()
-            setProduct(data)
-            setLoading(false)
-        }
-        getProdut()
-    }, [])
-
 
 
     const Loading = () => {
