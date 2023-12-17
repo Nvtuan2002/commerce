@@ -6,6 +6,7 @@ import { debounce } from "lodash";
 
 const Cart = () => {
     const state = useSelector((state) => state.cart);
+    const token = useSelector((state) => state.auth.token);
     const dispatch = useDispatch()
 
     const handleClose = (item) => {
@@ -21,7 +22,7 @@ const Cart = () => {
             <div className="px-4 my-5 bg-light rounded-3 py-5">
                 <div className="container py-4">
                     <div className="row">
-                        <h3>Your Cart is Empty</h3>
+                        <h3 className='text-center'>Please Login</h3>
                     </div>
                 </div>
             </div>
@@ -99,7 +100,7 @@ const Cart = () => {
                     </div>
                 </div>
                 <hr />
-                {state.length === 0 && emptyCart()}
+                {!token && state.length === 0 && emptyCart()}
                 {state.length !== 0 && state.map(cartItems)}
                 {state.length !== 0 && button()}
             </div>

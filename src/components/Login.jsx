@@ -1,13 +1,43 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { listUser, login } from '../services/Login'
+import { useDispatch } from 'react-redux'
+import { LoginRedux } from '../redux/Auth'
 
 const Login = () => {
+
+    const [user, setUser] = useState({})
+    const dispatch = useDispatch()
+
+    const handleAccount = (e) => {
+        setUser({
+            ...user, [e.target.name]: e.target.value
+        })
+    }
+
+    const handleSubmit = async (e) => {
+        const response = await login(user)
+        const dataListUser = await listUser()
+
+        const resultUser = dataListUser.data.find((item) => {
+            return item.username == user.username && item.password === user.password && response;
+        });
+
+        if (resultUser) {
+            dispatch(LoginRedux({
+                token: response.data.token,
+                user: resultUser
+            }));
+        }
+    }
+
     return (
         <>
             <button type="button" className="btn btn-outline-primary ms-auto" data-bs-toggle="modal" data-bs-target="#loginModal">
                 <span className="fa fa-sign-in me-1"></span>Login
             </button>
 
-            <div className="modal fade" id="loginModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+            <div className="modal fade" id="loginModal" >
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -17,19 +47,19 @@ const Login = () => {
                         <div className="modal-body">
                             <form>
                                 <div className="mb-3">
-                                    <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
-                                    <input type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
+                                    <label className="form-label">UserName</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name='username' onChange={handleAccount} />
                                     <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
-                                    <input type="password" className="form-control" id="exampleInputPassword1" />
+                                    <label className="form-label" >Password</label>
+                                    <input type="password" className="form-control" id="exampleInputPassword1" name='password' onChange={handleAccount} />
                                 </div>
                                 <div className="mb-3 form-check">
+                                    <label className="form-check-label" >Check me out</label>
                                     <input type="checkbox" className="form-check-input" id="exampleCheck1" />
-                                    <label className="form-check-label" htmlFor="exampleCheck1">Check me out</label>
                                 </div>
-                                <button type="submit" className="btn btn-outline-primary w-100 mt-5">Submit</button>
+                                <button type="button" className="btn btn-outline-primary w-100 mt-5" onClick={handleSubmit}>Submit</button>
                             </form>
                             <hr />
                             <button className="btn btn-danger w-100 mb-4 mt-2">

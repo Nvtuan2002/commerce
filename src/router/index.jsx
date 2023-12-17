@@ -2,15 +2,14 @@ import {
     createBrowserRouter,
 } from "react-router-dom";
 import Layout from '../components/Layout/Layout'
-import Home from '../components/Home'
-import Products from '../components/Products'
-import Product from '../components/Product'
-import Cart from '../components/Cart'
-import About from "../components/About";
-import Checkout from "../components/Checkout";
-import Contact from "../components/Contact";
-import Login from "../pages/Login";
-import Signup from "../pages/Signup";
+import PrivateRoute from '../router/PrivateRouter'
+import Home from '../pages/Home'
+import Products from '../pages/Products'
+import Product from '../pages/Product'
+import Cart from '../pages/Cart'
+import About from "../pages/About";
+import Checkout from "../pages/Checkout";
+import Contact from "../pages/Contact";
 
 export const router = createBrowserRouter([
     {
@@ -35,7 +34,9 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/checkout",
-                element: <Checkout />
+                element: <PrivateRoute>
+                    <Checkout />
+                </PrivateRoute>
             },
             {
                 path: "/about",

@@ -1,11 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Login from "../../pages/Login";
-import Signup from "../../pages/Signup";
+import Login from "../Login";
+import Signup from "../Signup";
+import Logout from "../Logout";
 
 const Header = () => {
     const state = useSelector((state) => state.cart);
+    const token = useSelector((state) => state.auth.token);
     return (
         <>
             <nav className="navbar navbar-expand-lg navbar-light bg-white py-3 shadow-sm">
@@ -30,8 +32,8 @@ const Header = () => {
                             </li>
                         </ul>
                         <div className="d-flex">
-                            <Login />
-                            <Signup />
+                            {token ? <Logout /> : <div className="d-flex"><Login /> <Signup /></div>}
+
                             <Link to="/cart" className="btn btn-dark ms-2">
                                 <i className="fa fa-shopping-cart me-1"></i>Cart ({state.length})</Link>
                         </div>
