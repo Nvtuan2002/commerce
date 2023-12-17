@@ -34,7 +34,7 @@ const Signup = () => {
                                     <input type="checkbox" className="form-check-input" id="exampleCheck1" />
                                     <label className="form-check-label" htmlFor="exampleCheck1">Check me out</label>
                                 </div>
-                                <button type="submit" className="btn btn-outline-primary w-100 mt-5">Register</button>
+                                <button type="button" className="btn btn-outline-primary w-100 mt-5">Register</button>
                             </form>
                             <hr />
                             <button className="btn btn-danger w-100 mb-4 mt-2">

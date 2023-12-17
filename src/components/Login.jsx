@@ -15,18 +15,23 @@ const Login = () => {
     }
 
     const handleSubmit = async (e) => {
-        const response = await login(user)
-        const dataListUser = await listUser()
+        try {
+            const response = await login(user);
+            const dataListUser = await listUser();
 
-        const resultUser = dataListUser.data.find((item) => {
-            return item.username == user.username && item.password === user.password && response;
-        });
+            const resultUser = dataListUser.data.find((item) => {
+                return item.username === user.username && item.password === user.password && response;
+            });
 
-        if (resultUser) {
-            dispatch(LoginRedux({
-                token: response.data.token,
-                user: resultUser
-            }));
+            if (resultUser) {
+                dispatch(LoginRedux({
+                    token: response.data.token,
+                    user: resultUser,
+                }));
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Login error:', error);
         }
     }
 
