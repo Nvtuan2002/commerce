@@ -1,46 +1,68 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
-//get Product by id
-export const getProduct = (id) => {
-    const [product, setProduct] = useState([])
-    const [loading, setLoading] = useState(false)
-
-    useEffect(() => {
-        const fetchProduct = async () => {
-            setLoading(true)
-            const response = await fetch(`https://fakestoreapi.com/products/${id}`)
-            const data = await response.json()
-            setProduct(data)
-            setLoading(false)
-        }
-        fetchProduct()
-    }, [id])
-
-    return { product, loading, setProduct, setLoading }
-}
-
-//Get List Products 
-export const getProducts = () => {
+//Get All Products
+export const getProducts = (slug) => {
     const [data, setData] = useState([]);
-    const [filter, setFilter] = useState(data);
+    const [filter, setFilter] = useState([]);
     const [loading, setLoading] = useState(false);
-    let componentMounted = true;
+    const [paging, setPaging] = useState({
+        page: 1,
+        pageSize: 8,
+        pageCount: 1,
+        total: 18,
+    });
+
     useEffect(() => {
-        const getProducs = async () => {
+        let componentMounted = true;
+
+        const getProducts = async () => {
             setLoading(true);
-            const response = await fetch('https://fakestoreapi.com/products');
-            const data = await response.json();
-            if (componentMounted) {
-                setData(data);
-                setFilter(data);
+            try {
+                let response;
+
+                if (slug) {
+                    response = await axios(`https://backoffice.nodemy.vn/api/products/${slug}?populate=*`);
+                } else {
+                    response = await axios(`https://backoffice.nodemy.vn/api/products?populate=*&pagination[page]=${paging.page}&pagination[pageSize]=${paging.pageSize}`);
+                }
+
+                const responseData = response.data.data;
+
+                if (componentMounted) {
+                    setData(responseData);
+                    setFilter(responseData);
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error('Error fetching products:', error);
                 setLoading(false);
             }
-            return () => {
-                componentMounted = false;
-            }
-        }
-        getProducs();
-    }, []);
+        };
 
-    return { data, loading, filter, setData, setFilter, setLoading }
+        getProducts();
+
+        return () => {
+            componentMounted = false;
+        };
+    }, [slug, paging.page]);
+
+    return { data, loading, filter, setData, setFilter, setLoading, paging, setPaging };
+};
+
+//Get All Brand 
+export const getBrand = () => {
+    const [brand, setBrand] = useState([])
+
+    useEffect(() => {
+        const fetchBrand = async () => {
+            const response = await fetch('https://backoffice.nodemy.vn/api/brands')
+            const res = await response.json()
+            const data = res.data
+            setBrand(data)
+        }
+        fetchBrand()
+    }, [])
+
+    return { brand, setBrand }
 }

@@ -6,16 +6,27 @@ const Checkout = () => {
     const user = useSelector((state) => state.auth.user)
     var total = 0;
     const itemList = (item, index) => {
-        total = cart.reduce((acc, item) => acc + item.qty * item.price, 0);
+        total = cart.reduce((acc, item) => acc + item.qty * item?.attributes?.price, 0);
         return (
             <li key={index} className="list-group-item d-flex justify-content-between lh-sm">
                 <div>
-                    <h6 className="my-0">{item.title}</h6>
+                    <h6 className="">{item?.attributes?.name}</h6>
                 </div>
-                <span className="text-muted">${item.price}</span>
+                <span className="text-muted">{formatPrice(item?.attributes?.price)}</span>
             </li>
         );
     }
+
+    const formatPrice = (price) => {
+        const formattedPrice = new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+        }).format(price);
+
+        const priceWithoutSymbol = formattedPrice.replace('₫', '');
+
+        return priceWithoutSymbol.trim();
+    };
 
 
     return (
@@ -31,8 +42,8 @@ const Checkout = () => {
                             {cart.map(itemList)}
 
                             <li className="list-group-item d-flex justify-content-between">
-                                <span>Total (USD)</span>
-                                <strong>${total}</strong>
+                                <span>Total (VNĐ)</span>
+                                <strong>{formatPrice(total)}</strong>
                             </li>
                         </ul>
 
@@ -49,7 +60,7 @@ const Checkout = () => {
                             <div className="row g-3">
                                 <div className="col-sm-6">
                                     <label htmlFor="firstName" className="form-label">First name</label>
-                                    <input type="text" className="form-control" id="firstName" placeholder={user.name.firstname} required="" />
+                                    <input type="text" className="form-control" id="firstName" placeholder={user?.name?.firstname} required="" />
                                     <div className="invalid-feedback">
                                         Valid first name is required.
                                     </div>
@@ -57,7 +68,7 @@ const Checkout = () => {
 
                                 <div className="col-sm-6">
                                     <label htmlFor="lastName" className="form-label">Last name</label>
-                                    <input type="text" className="form-control" id="lastName" placeholder={user.name.lastname} required="" />
+                                    <input type="text" className="form-control" id="lastName" placeholder={user?.name?.lastname} required="" />
                                     <div className="invalid-feedback">
                                         Valid last name is required.
                                     </div>
@@ -67,7 +78,7 @@ const Checkout = () => {
                                     <label htmlFor="username" className="form-label">Username</label>
                                     <div className="input-group has-validation">
                                         <span className="input-group-text">@</span>
-                                        <input type="text" className="form-control" id="username" placeholder={user.username} required="" />
+                                        <input type="text" className="form-control" id="username" placeholder={user?.username} required="" />
                                         <div className="invalid-feedback">
                                             Your username is required.
                                         </div>
@@ -84,7 +95,7 @@ const Checkout = () => {
 
                                 <div className="col-12">
                                     <label htmlFor="address" className="form-label">Address</label>
-                                    <input type="text" className="form-control" id="address" placeholder={user.address.street + ', ' + user.address.city} required="" />
+                                    <input type="text" className="form-control" id="address" placeholder={user?.address?.street + ', ' + user?.address?.city} required="" />
                                     <div className="invalid-feedback">
                                         Please enter your shipping address.
                                     </div>
@@ -114,7 +125,7 @@ const Checkout = () => {
 
                                 <div className="col-md-3">
                                     <label htmlFor="zip" className="form-label">Zip</label>
-                                    <input type="text" className="form-control" id="zip" placeholder={user.address.zipcode} required="" />
+                                    <input type="text" className="form-control" id="zip" placeholder={user?.address?.zipcode} required="" />
                                     <div className="invalid-feedback">
                                         Zip code required.
                                     </div>

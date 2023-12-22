@@ -17,12 +17,23 @@ const Cart = () => {
         dispatch(qtyItem(item))
     }, 1000);
 
+    const formatPrice = (price) => {
+        const formattedPrice = new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+        }).format(price);
+
+        const priceWithoutSymbol = formattedPrice.replace('₫', '');
+
+        return priceWithoutSymbol.trim();
+    };
+
     const emptyCart = () => {
         return (
             <div className="px-4 my-5 bg-light rounded-3 py-5">
                 <div className="container py-4">
                     <div className="row">
-                        <h3 className='text-center'>Please Login</h3>
+                        <h3 className='text-center'>Product Empty</h3>
                     </div>
                 </div>
             </div>
@@ -46,13 +57,13 @@ const Cart = () => {
                     <button onClick={() => handleClose(cartItem)} className="btn-close float-end" aria-label="Close"></button>
                     <div className="row">
                         <div className="col-md-2">
-                            <img src={cartItem.image} alt={cartItem.title} height="200px" width="180px" />
+                            <img src={`https:backoffice.nodemy.vn${cartItem?.attributes?.image?.data[0]?.attributes?.url}`} alt={cartItem.title} height="200px" width="180px" />
                         </div>
                         <div className="col-md-2">
-                            <h4>{cartItem.title}</h4>
+                            <h4>{cartItem?.attributes?.name}</h4>
                         </div>
                         <div className="col-md-2">
-                            <p className="lead fw-bold">${cartItem.price}</p>
+                            <p className="lead fw-bold">{formatPrice(cartItem?.attributes?.price) + ' VNĐ'}</p>
                         </div>
                         <div className="col-md-2">
                             <input type="number" className='lead fw-bold' style={{ width: 60 }} placeholder={cartItem.qty}
@@ -70,7 +81,7 @@ const Cart = () => {
                                 }} />
                         </div>
                         <div className="col-md-2">
-                            <p className="lead fw-bold">$ {cartItem.qty * cartItem.price}</p>
+                            <p className="lead fw-bold">{formatPrice(cartItem.qty * cartItem?.attributes?.price ) + ' VNĐ'}</p>
                         </div>
                     </div>
                 </div>

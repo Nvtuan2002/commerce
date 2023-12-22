@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { listUser, login } from '../services/Login'
+import { login } from '../services/Auth/Login'
 import { useDispatch } from 'react-redux'
 import { LoginRedux } from '../redux/Auth'
 
@@ -13,23 +13,17 @@ const Login = () => {
             ...user, [e.target.name]: e.target.value
         })
     }
-
     const handleSubmit = async (e) => {
         try {
             const response = await login(user);
-            const dataListUser = await listUser();
-
-            const resultUser = dataListUser.data.find((item) => {
-                return item.username === user.username && item.password === user.password && response;
-            });
-
-            if (resultUser) {
+            console.log(response);
+            if (response) {
                 dispatch(LoginRedux({
-                    token: response.data.token,
-                    user: resultUser,
+                    token: response.data.jwt,
+                    user: response.data.user,
                 }));
-                window.location.reload();
             }
+            window.location.reload();
         } catch (error) {
             console.error('Login error:', error);
         }
@@ -52,8 +46,8 @@ const Login = () => {
                         <div className="modal-body">
                             <form>
                                 <div className="mb-3">
-                                    <label className="form-label">UserName</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name='username' onChange={handleAccount} />
+                                    <label className="form-label">Email</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name='identifier' onChange={handleAccount} />
                                     <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
                                 </div>
                                 <div className="mb-3">

@@ -1,6 +1,30 @@
 import React from 'react'
+import { useState } from 'react'
+import { Register } from '../services/Auth/Register'
+import { useNavigate } from 'react-router-dom'
 
 const Signup = () => {
+
+    const [user, setUser] = useState({})
+    const nav = useNavigate()
+
+    const handleAccount = (e) => {
+        setUser({
+            ...user, [e.target.name]: e.target.value
+        })
+    }
+    const handleSubmit = async (e) => {
+        try {
+            const response = await Register(user);
+            if(response){
+                alert('Đăng ký thành công')
+            }
+            
+        } catch (error) {
+            console.error('Login error:', error);
+        }
+    }
+
     return (
         <div>
             <button type="button" className="btn btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#signupModal">
@@ -15,26 +39,25 @@ const Signup = () => {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-
                             <form>
                                 <div className="mb-3">
                                     <label htmlFor="exampleInput" className="form-label">Username</label>
-                                    <input type="text" className="form-control" id="exampleInput" />
+                                    <input type="text" className="form-control" name='username' id="exampleInput" onChange={handleAccount} />
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
-                                    <input type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
+                                    <input type="email" name='email' className="form-control" id="exampleInputEmail1" onChange={handleAccount} aria-describedby="emailHelp" />
                                     <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
-                                    <input type="password" className="form-control" id="exampleInputPassword1" />
+                                    <input type="password" name='password' className="form-control" onChange={handleAccount} id="exampleInputPassword1" />
                                 </div>
                                 <div className="mb-3 form-check">
                                     <input type="checkbox" className="form-check-input" id="exampleCheck1" />
                                     <label className="form-check-label" htmlFor="exampleCheck1">Check me out</label>
                                 </div>
-                                <button type="button" className="btn btn-outline-primary w-100 mt-5">Register</button>
+                                <button type="button" onClick={handleSubmit} className="btn btn-outline-primary w-100 mt-5">Register</button>
                             </form>
                             <hr />
                             <button className="btn btn-danger w-100 mb-4 mt-2">

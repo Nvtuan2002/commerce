@@ -4,8 +4,8 @@ import {
 import Layout from '../components/Layout/Layout'
 import PrivateRoute from '../router/PrivateRouter'
 import Home from '../pages/Home'
-import Products from '../pages/Products'
-import Product from '../pages/Product'
+import Products from '../pages/Products/Products'
+import ProductDetail from '../pages/Products/ProductDetail'
 import Cart from '../pages/Cart'
 import About from "../pages/About";
 import Checkout from "../pages/Checkout";
@@ -25,8 +25,8 @@ export const router = createBrowserRouter([
                 element: <Products />
             },
             {
-                path: "/product/:id",
-                element: <Product />
+                path: "/product/:slug",
+                element: <ProductDetail />
             },
             {
                 path: "/cart",
