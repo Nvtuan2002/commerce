@@ -40,38 +40,43 @@ const Product = () => {
     }
 
     const newArrImage = Object.values(data);
-    const images = newArrImage
-        ?.map((item) =>
-            item?.image?.data?.map((listImage) => ({
-                original: `https://backoffice.nodemy.vn${listImage?.attributes?.url}`,
-                thumbnail: `https://backoffice.nodemy.vn${listImage?.attributes?.url}`,
-            }))
-        )
-        .flat()
-        .filter((item) => item !== undefined);
+    const images = newArrImage?.map((item) =>
+        item?.image?.data?.map((listImage) => ({
+            original: `https://backoffice.nodemy.vn${listImage?.attributes?.url}`,
+            thumbnail: `https://backoffice.nodemy.vn${listImage?.attributes?.url}`,
+        }))
+    ).flat().filter((item) => item !== undefined);
 
-    console.log(images);
+    const formatPrice = (price) => {
+        const formattedPrice = new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+        }).format(price);
 
+        const priceWithoutSymbol = formattedPrice.replace('₫', '');
+
+        return priceWithoutSymbol.trim();
+    };
 
     const ShowProduct = () => {
         return (<>
-            <Row gutter={[100,20]} style={{marginBottom: '36px'}}>
+            <Row gutter={[100, 20]} style={{ marginBottom: '36px' }}>
                 <Col span={14}>
                     <ImageGallery items={images} />
                 </Col>
-                <Col span={10} style={{marginTop: '105px'}} >
+                <Col span={10} style={{ marginTop: '105px' }} >
                     <h4 className='text-uppercase text-black-50 '>
                         {data.attributes?.idBrand?.data?.attributes?.name}
                     </h4>
                     <Row className='display-6 my-5'>{data?.attributes?.name}</Row>
                     <h4 className='my-4'> Giá cũ:
                         <del className=" my-4" style={{ color: 'red' }}>
-                            ${data?.attributes?.oldPrice}
+                            {formatPrice(data?.attributes?.oldPrice) + ' VND'}
                         </del>
                     </h4>
                     <h3 className=" fw-bold my-4">
                         Giá mới:
-                        ${data?.attributes?.price}
+                        {formatPrice(data?.attributes?.price) + 'VND'}
                     </h3>
                     <button className='btn btn-outline-dark px-4 py-2 my-5'
                         onClick={() => {

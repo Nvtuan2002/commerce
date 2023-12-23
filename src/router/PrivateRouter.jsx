@@ -7,5 +7,6 @@ export default function PrivateRouter(props) {
         return props.children
     } else {
         alert('Bạn chưa đăng nhập')
+        window.location.href = '/login'
     }
 }

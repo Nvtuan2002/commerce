@@ -1,5 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
+import Login from '../components/Login'
 
 const Checkout = () => {
     const cart = useSelector((state) => state.cart)
