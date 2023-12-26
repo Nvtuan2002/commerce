@@ -1,7 +1,7 @@
 import React from 'react';
 import Skeleton from 'react-loading-skeleton'
-import { getProducts, getBrand } from '../../services/products';
-import { ShowProducts } from './ShowProducts';
+import { getProducts, getBrand } from '../services/products';
+import { ShowProducts } from '../components/Products/ShowProducts';
 
 const Products = () => {
 

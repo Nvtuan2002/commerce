@@ -1,12 +1,11 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { DownOutlined, FilterOutlined } from '@ant-design/icons';
 import { Dropdown, Button, Row, Col, Pagination, Input, Card } from 'antd';
 import { useState } from 'react';
 import { getBrand, getProducts } from '../../services/products';
 
-
-
-export const ShowProducts = () => {
+const ProductLatest = () => {
 
     const { Meta } = Card;
 
@@ -55,7 +54,7 @@ export const ShowProducts = () => {
     }
 
     return (
-        <>
+        <div>
             <div style={{ marginBottom: '16px' }}>
                 <h3 className='fw-bold'><FilterOutlined />Filter</h3>
                 <Row justify="space-between">
@@ -93,11 +92,11 @@ export const ShowProducts = () => {
             <Row gutter={[16, 40]} className='mt-3'>
                 {filter?.map((product, index) => {
                     return (
-                        <Col span={6} key={index}>
+                        <Col span={6} key={index} className='d-flex justify-content-center'>
                             <Card
                                 hoverable
                                 style={{
-                                    width: 240,
+                                    width: 250,
                                 }}
                                 cover={<img src={`https://backoffice.nodemy.vn${product?.attributes?.image?.data[0]?.attributes?.url}`} className="card-img-top" height="250px" />}
                             >
@@ -121,7 +120,9 @@ export const ShowProducts = () => {
                         page: page
                     }
                 })
-            }} total={30} />;
-        </>
-    )
-}
+            }} total={paging.total * 2.5} />;
+        </div>
+    );
+};
+
+export default ProductLatest;
