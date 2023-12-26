@@ -90,10 +90,12 @@ export const getCheckboxBrand = (brand) => {
 
     useEffect(() => {
         const fetchCheckbox = async () => {
-            const response = await fetch(`https://backoffice.nodemy.vn/api/products?populate=*&${brand.map(brandName => `filters[idBrand][name][$in][]=${brandName}`).join('&')}`);
-            const res = await response.json();
-            const data = res.data;
-            setDataCheckbox(data);
+            if (brand != '') {
+                const response = await fetch(`https://backoffice.nodemy.vn/api/products?populate=*&${brand.map(brandName => `filters[idBrand][name][$in][]=${brandName}`).join('&')}`);
+                const res = await response.json();
+                const data = res.data;
+                setDataCheckbox(data);
+            }
         };
         fetchCheckbox();
     }, [brand]);

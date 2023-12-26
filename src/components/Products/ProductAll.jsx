@@ -36,7 +36,6 @@ const ProductAll = () => {
         setStateCheckbox(urlState);
     }, [query]);
 
-    console.log('dataCheckbox', dataCheckbox , 'stateCheckbox', stateCheckbox, 'category', category);
     //Format Price
     const formatPrice = (price) => {
         const formattedPrice = new Intl.NumberFormat('vi-VN', {
