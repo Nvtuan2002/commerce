@@ -3,14 +3,14 @@ import {
 } from "react-router-dom";
 import Layout from '../components/Layout/Layout'
 import PrivateRoute from '../router/PrivateRouter'
-import Home from '../pages/Home'
+import Home from '../pages/Home/Home'
 import Products from '../pages/Products'
 import ProductDetail from '../components/Products/ProductDetail'
 import Cart from '../pages/Cart'
 import About from "../pages/About";
 import Checkout from "../pages/Checkout";
 import Contact from "../pages/Contact";
-import ProductAll from "../components/Products/ProductAll";
+import ProductCateMore from "../components/Products/ProductCateMore";
 
 export const router = createBrowserRouter([
     {
@@ -31,7 +31,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/category/:slug",
-                element: <ProductAll />
+                element: <ProductCateMore />
             },
             {
                 path: "/cart",

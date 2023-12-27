@@ -1,27 +1,27 @@
 import React from 'react';
-import { getCategory, getCheckboxBrand } from '../../services/products';
+import { useState, useEffect } from 'react';
 import { Row, Col, Card } from 'antd';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useFetch } from '@/customHook/useFetch';
 
 
-const ProductAll = () => {
+const ProductCateMore = () => {
 
-    const param = useParams()
+    const { Meta } = Card;
+    const params = useParams()
     const [stateCheckbox, setStateCheckbox] = useState([]);
     const [query, setQuery] = useSearchParams();
-    const { category } = getCategory(param.slug);
-    const { Meta } = Card;
-    const { dataCheckbox } = getCheckboxBrand(stateCheckbox)
+    const { data } = useFetch('/products', `filters[idCategories][slug]=${params.slug}`);
+    const { data: dataCheckbox } = useFetch('/products', `filters[idCategories][slug]=${params.slug}&${stateCheckbox.map(brandName => `filters[idBrand][name][$in][]=${brandName}`).join('&')}`)
 
     //CheckBox
-    const plainOptions = Array.from(new Set(category.flatMap(product => (product?.attributes?.idBrand?.data?.attributes?.name || [])))) || [];
+    const plainOptions = Array.from(new Set((data || []).flatMap(product => (product?.attributes?.idBrand?.data?.attributes?.name || [])))) || [];
     const onCheckAllChange = (e) => {
         const updatedState = e.target.checked ? plainOptions : [];
         setStateCheckbox(updatedState);
         setQuery({ key: updatedState });
     };
- 
+
     const onChange = (e) => {
         const value = e.target.value;
         const updatedState = stateCheckbox.includes(value)
@@ -35,6 +35,7 @@ const ProductAll = () => {
         const urlState = query.getAll('key');
         setStateCheckbox(urlState);
     }, [query]);
+
 
     //Format Price
     const formatPrice = (price) => {
@@ -52,9 +53,8 @@ const ProductAll = () => {
         <div className='container mt-3'>
             <Row justify="space-between">
                 <Col span={12}>
-                    <h2 className='fw-bold'>{category[0]?.attributes?.idCategories?.data[0]?.attributes?.name} <small style={{ fontSize: '14px', opacity: '0.8' }}>(Tổng {category.length} sản phẩm)</small></h2>
+                    <h2 className='fw-bold'>{data[0]?.attributes?.idCategories?.data[0]?.attributes?.name} <small style={{ fontSize: '14px', opacity: '0.8' }}>(Tổng {data.length} sản phẩm)</small></h2>
                 </Col>
-
             </Row>
             <Row gutter={[16, 40]}>
                 <Col span={6}>
@@ -96,7 +96,7 @@ const ProductAll = () => {
                 </Col>
                 <Col span={18}>
                     <Row gutter={[16, 40]} className='mt-3 my-5'>
-                        {(dataCheckbox.length >= 1 ? dataCheckbox : category)?.map((product, index) => (
+                        {(stateCheckbox?.length >= 1 ? dataCheckbox : data)?.map((product, index) => (
                             <Col span={6} key={index}>
                                 <Card
                                     hoverable
@@ -123,4 +123,4 @@ const ProductAll = () => {
     );
 };
 
-export default ProductAll;
+export default ProductCateMore;

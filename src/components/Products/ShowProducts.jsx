@@ -1,15 +1,9 @@
-import ProductLatest from './ProductLatest';
-import ProductsCate from './ProductsCate';
-
+import ProductCate from './ProductCate';
 
 export const ShowProducts = () => {
-
-
     return (
         <>
-            <ProductLatest></ProductLatest>
-            <ProductsCate category='Laptop-gaming' />
-            <ProductsCate category='man-hinh' />
+            <ProductCate title='laptop-gaming'></ProductCate>
         </>
     )
 }

@@ -3,17 +3,17 @@ import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton'
 import { useDispatch } from 'react-redux';
-import { addItem, deleteItem } from '../../redux/Cart';
-import { getProducts } from '../../services/products';
+import { addItem, deleteItem } from '@/redux/Cart';
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import { Col, Row } from 'antd';
+import { useFetch } from '@/customHook/useFetch';
 
 
 const Product = () => {
 
     const params = useParams()
-    const { loading, data } = getProducts(params.slug)
+    const { data, loading } = useFetch(`/products/${params.slug}`);
     const dispatch = useDispatch()
 
     const addProduct = (data) => {

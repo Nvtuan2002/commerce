@@ -7,6 +7,8 @@ import { router } from './router';
 import { PersistGate } from 'redux-persist/integration/react'
 import { persistor } from './redux/store'
 import { store } from './redux/store'
+import '@/configs/axios'
+
 
 function App() {
 

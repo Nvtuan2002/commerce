@@ -1,13 +1,12 @@
 import React from 'react';
-import { getCategory } from '../../services/products';
 import { Row, Col, Card } from 'antd';
 import { Link } from 'react-router-dom';
+import { useFetch } from '@/customHook/useFetch';
 
 
-const ProductsCate = (props) => {
-    const { category } = getCategory(props.category);
+const ProductList = (props) => {
+    const { data } = useFetch('/products', props.query)
     const { Meta } = Card;
-
     //Format Price
     const formatPrice = (price) => {
         const formattedPrice = new Intl.NumberFormat('vi-VN', {
@@ -22,16 +21,8 @@ const ProductsCate = (props) => {
 
     return (
         <>
-            <Row justify="space-between">
-                <Col span={12}>
-                    <h2 className='fw-bold'>{category[0]?.attributes?.idCategories?.data[0]?.attributes?.name} </h2>
-                </Col>
-                <Col span={12} className='text-end'>
-                    <Link to={`/category/${category[0]?.attributes?.idCategories?.data[0]?.attributes?.slug}`} className="btn btn-outline-dark">See More</Link>
-                </Col>
-            </Row>
             <Row gutter={[16, 40]} className='mt-3 my-5'>
-                {category.splice(0,5)?.map((product, index) => {
+                {data?.map((product, index) => {
                     return (
                         <Col span={4.8} key={index}>
                             <Card
@@ -58,4 +49,4 @@ const ProductsCate = (props) => {
     );
 };
 
-export default ProductsCate;
+export default ProductList;
