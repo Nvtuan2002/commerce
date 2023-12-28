@@ -1,6 +1,6 @@
 import React from 'react';
 import Skeleton from 'react-loading-skeleton'
-import { ShowProducts } from '../components/Products/ShowProducts';
+import ProductCate from '@/components/Products/ProductCate';
 
 const Products = () => {
     const loading = false;
@@ -22,6 +22,15 @@ const Products = () => {
             </>
         );
     };
+
+    const ShowProducts = () => {
+        return (
+            <>
+                <ProductCate title='laptop-gaming'></ProductCate>
+                <ProductCate title='man-hinh'></ProductCate>
+            </>
+        )
+    }
 
     return (
         <div>

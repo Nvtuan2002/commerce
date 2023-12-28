@@ -23,21 +23,22 @@ const Home = () => {
         lineHeight: '160px',
         textAlign: 'center',
         background: '#364d79',
+        outline: 'none',
     };
 
     return (
         <>
             <div className="container my-4">
                 <Row gutter={[16, 40]}>
-                    <Col span={16} style={{ borderRadius: '16px' }} >
-                        <Carousel autoplay>
+                    <Col span={16} style={{ outline: 'none' }} >
+                        <Carousel autoplay style={{ outline: 'none' }} >
                             {((banner.leftBanner?.data || [])).map((item, index) => (
                                 <div className={`carousel-item ${index === 0 ? "active" : ""}`} style={contentStyle} key={index}>
                                     <img
                                         src={`https://backoffice.nodemy.vn${item.attributes.url}`}
                                         className="d-block w-100"
                                         alt=""
-                                        style={{ height: "100%", width: '100%', objectFit: "cover" }}
+                                        style={{ height: "100%", width: '100%', objectFit: "cover", borderRadius: 12 }}
                                     />
                                 </div>
                             ))}

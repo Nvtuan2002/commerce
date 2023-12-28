@@ -2,75 +2,115 @@ import React from 'react'
 import { useState } from 'react'
 import { Register } from '../services/Auth/Register'
 import { useNavigate } from 'react-router-dom'
+import { Button, Modal, Input, Form, Checkbox } from 'antd';
 
 const Signup = () => {
 
-    const [user, setUser] = useState({})
     const nav = useNavigate()
 
-    const handleAccount = (e) => {
-        setUser({
-            ...user, [e.target.name]: e.target.value
-        })
-    }
-    const handleSubmit = async (e) => {
-        try {
-            const response = await Register(user);
-            if(response){
-                alert('Đăng ký thành công')
-            }
-            
-        } catch (error) {
-            console.error('Login error:', error);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+
+
+    const onFinish = async (values) => {
+        const response = await Register(values)
+        if (response) {
+            console.log('Đăng ký thành công');
+            setIsModalOpen(false);
         }
     }
 
     return (
-        <div>
-            <button type="button" className="btn btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#signupModal">
-                <span className="fa fa-user-plus me-1"></span> Register
-            </button>
+        <>
+            <Button type="primary" onClick={showModal}>
+                REGISTER
+            </Button>
+            <Modal title="REGISTER" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                <Form
+                    labelAlign='left'
+                    name="REGISTER"
+                    labelCol={{
+                        span: 5,
+                    }}
+                    wrapperCol={{
+                        span: 18,
+                    }}
+                    style={{
+                        maxWidth: 600,
+                    }}
+                    initialValues={{
+                        remember: true,
+                    }}
+                    onFinish={onFinish}
+                >
+                    <Form.Item
+                        label="Username"
+                        name="username"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please input your username!',
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label="Email"
+                        name="email"
+                        rules={[
+                            {
+                                type: 'email',
+                                required: true,
+                                message: 'Please input your Email!',
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
 
-            <div className="modal fade" id="signupModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Login</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            <form>
-                                <div className="mb-3">
-                                    <label htmlFor="exampleInput" className="form-label">Username</label>
-                                    <input type="text" className="form-control" name='username' id="exampleInput" onChange={handleAccount} />
-                                </div>
-                                <div className="mb-3">
-                                    <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
-                                    <input type="email" name='email' className="form-control" id="exampleInputEmail1" onChange={handleAccount} aria-describedby="emailHelp" />
-                                    <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
-                                </div>
-                                <div className="mb-3">
-                                    <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
-                                    <input type="password" name='password' className="form-control" onChange={handleAccount} id="exampleInputPassword1" />
-                                </div>
-                                <div className="mb-3 form-check">
-                                    <input type="checkbox" className="form-check-input" id="exampleCheck1" />
-                                    <label className="form-check-label" htmlFor="exampleCheck1">Check me out</label>
-                                </div>
-                                <button type="button" onClick={handleSubmit} className="btn btn-outline-primary w-100 mt-5">Register</button>
-                            </form>
-                            <hr />
-                            <button className="btn btn-danger w-100 mb-4 mt-2">
-                                <span className="fa fa-google me-2"></span> Sign up With Google
-                            </button>
-                            <button className="btn btn-primary w-100 mb-4">
-                                <span className="fa fa-facebook me-2"></span> Sign up With Facebook
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    <Form.Item
+                        label="Password"
+                        name="password"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please input your password!',
+                            },
+                        ]}
+                    >
+                        <Input.Password />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="remember"
+                        valuePropName="checked"
+                    >
+                        <Checkbox>Remember me</Checkbox>
+                    </Form.Item>
+
+                    <Form.Item
+                        wrapperCol={{
+                            offset: 10,
+                            span: 16,
+                        }}
+                    >
+                        <Button type="primary" htmlType="submit" size='large'>
+                            Submit
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
+        </>
     )
 }
 

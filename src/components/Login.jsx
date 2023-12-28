@@ -2,75 +2,93 @@ import React, { useEffect, useState } from 'react'
 import { login } from '../services/Auth/Login'
 import { useDispatch } from 'react-redux'
 import { LoginRedux } from '../redux/Auth'
+import { Button, Modal, Input, Form, Checkbox } from 'antd';
 
 const Login = () => {
-
-    const [user, setUser] = useState({})
     const dispatch = useDispatch()
 
-    const handleAccount = (e) => {
-        setUser({
-            ...user, [e.target.name]: e.target.value
-        })
-    }
-    const handleSubmit = async (e) => {
-        try {
-            const response = await login(user);
-            console.log(response);
-            if (response) {
-                dispatch(LoginRedux({
-                    token: response.data.jwt,
-                    user: response.data.user,
-                }));
-            }
-            window.location.reload();
-        } catch (error) {
-            console.error('Login error:', error);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+
+    const onFinish = async (values) => {
+        const response = await login(values)
+        if (response) {
+            dispatch(LoginRedux({
+                token: response.data.jwt,
+                user: response.data.user,
+            }));
         }
     }
 
     return (
         <>
-            <button type="button" className="btn btn-outline-primary ms-auto" data-bs-toggle="modal" data-bs-target="#loginModal">
-                <span className="fa fa-sign-in me-1"></span>Login
-            </button>
+            <Button className='me-2' type="primary" onClick={showModal}>
+                LOGIN
+            </Button>
+            <Modal title="LOGIN" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                <Form
+                    name="basic"
+                    style={{
+                        maxWidth: 600,
+                    }}
+                    initialValues={{
+                        remember: true,
+                    }}
+                    onFinish={onFinish}
+                >
+                    <Form.Item
+                        label="Username"
+                        name="identifier"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please input your username!',
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
 
+                    <Form.Item
+                        label="Password"
+                        name="password"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please input your password!',
+                            },
+                        ]}
+                    >
+                        <Input.Password />
+                    </Form.Item>
 
-            <div className="modal fade" id="loginModal" >
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Login</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            <form>
-                                <div className="mb-3">
-                                    <label className="form-label">Email</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name='identifier' onChange={handleAccount} />
-                                    <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
-                                </div>
-                                <div className="mb-3">
-                                    <label className="form-label" >Password</label>
-                                    <input type="password" className="form-control" id="exampleInputPassword1" name='password' onChange={handleAccount} />
-                                </div>
-                                <div className="mb-3 form-check">
-                                    <label className="form-check-label" >Check me out</label>
-                                    <input type="checkbox" className="form-check-input" id="exampleCheck1" />
-                                </div>
-                                <button type="button" className="btn btn-outline-primary w-100 mt-5" onClick={handleSubmit}>Submit</button>
-                            </form>
-                            <hr />
-                            <button className="btn btn-danger w-100 mb-4 mt-2">
-                                <span className="fa fa-google me-2"></span> Sign in With Google
-                            </button>
-                            <button className="btn btn-primary w-100 mb-4">
-                                <span className="fa fa-facebook me-2"></span> Sign in With Facebook
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <Form.Item
+                        name="remember"
+                        valuePropName="checked"
+                    >
+                        <Checkbox>Remember me</Checkbox>
+                    </Form.Item>
+
+                    <Form.Item
+                        wrapperCol={{
+                            offset: 10,
+                            span: 16,
+                        }}
+                    >
+                        <Button type="primary" htmlType="submit" size='large'>
+                            Submit
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
         </>
     )
 }
