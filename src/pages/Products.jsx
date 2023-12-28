@@ -27,7 +27,13 @@ const Products = () => {
         return (
             <>
                 <ProductCate title='laptop-gaming'></ProductCate>
+                <ProductCate title='laptop-xin'></ProductCate>
                 <ProductCate title='man-hinh'></ProductCate>
+                <ProductCate title='phu-kien'></ProductCate>
+                <ProductCate title='ban-phim'></ProductCate>
+                <ProductCate title='ghe-ban'></ProductCate>
+                <ProductCate title='phan-mem-and-mang'></ProductCate>
+                <ProductCate title='tai-nghe-loa'></ProductCate>
             </>
         )
     }

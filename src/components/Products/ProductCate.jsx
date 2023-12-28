@@ -5,9 +5,9 @@ import { useFetch } from '@/customHook/useFetch';
 import ProductList from './ProductList';
 
 const ProductCate = (props) => {
-    
-    const { data } = useFetch('/products', props.title)
-    
+
+    const { data } = useFetch('/products', `filters[idCategories][slug]=${props.title}`)
+
     return (
         <>
             <Row justify="space-between">

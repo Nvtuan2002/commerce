@@ -6,6 +6,7 @@ import { useEffect } from "react";
 export function useFetch(url, query = '') {
   const [data, setData] = useState([]);
   const [reload, setReload] = useState(false)
+  const [loading, setLoading] = useState(false);
   let componentMounted = true;
 
   const reloadData = () => {
@@ -19,6 +20,7 @@ export function useFetch(url, query = '') {
 
   url += `?populate=*&pagination[page]=${paging.page}&pagination[pageSize]=${paging.pageSize}&${query}`;
   useEffect(() => {
+    setLoading(true);
     axios
       .get(url)
       .then((res) => {
@@ -27,15 +29,16 @@ export function useFetch(url, query = '') {
           setPaging({
             ...res?.data?.meta?.pagination,
           });
+          setLoading(false);
         }
       })
       .catch((err) => {
-        console.log(err);
+        setLoading(false);
       });
     return () => {
       componentMounted = false;
     };
   }, [url, paging.page, paging.pageSize, reload, query]);
 
-  return { data, setData, paging, setPaging, reload, reloadData };
+  return { data, setData, paging, setPaging, reload, reloadData, loading, setLoading };
 }

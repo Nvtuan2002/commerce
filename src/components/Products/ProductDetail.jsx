@@ -69,6 +69,13 @@ const Product = () => {
                         {data.attributes?.idBrand?.data?.attributes?.name}
                     </h4>
                     <Row className='display-6 my-5'>{data?.attributes?.name}</Row>
+                    <h5>Thông sổ sản phẩm</h5>
+                    <p className='lead fw-medium'>
+                        <li>CPU: {data?.attributes?.cpu}</li>
+                        <li>RAM: {data?.attributes?.ram}</li>
+                        <li>Quantity Available: {data?.attributes?.quantityAvailable}</li>
+                    </p>
+
                     <h4 className='my-4'> Giá cũ:
                         <del className=" my-4" style={{ color: 'red' }}>
                             {formatPrice(data?.attributes?.oldPrice) + ' VND'}

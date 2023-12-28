@@ -3,7 +3,7 @@ import Products from '../Products'
 import { useState } from 'react'
 import { getBanner } from '../../services/Banner'
 import { Row, Col, Carousel } from 'antd'
-
+import { LazyLoadImage } from 'react-lazy-load-image-component'
 
 const Home = () => {
     //1 State
@@ -28,13 +28,13 @@ const Home = () => {
 
     return (
         <>
-            <div className="container my-4">
+            <div className=" container my-4">
                 <Row gutter={[16, 40]}>
                     <Col span={16} style={{ outline: 'none' }} >
                         <Carousel autoplay style={{ outline: 'none' }} >
                             {((banner.leftBanner?.data || [])).map((item, index) => (
-                                <div className={`carousel-item ${index === 0 ? "active" : ""}`} style={contentStyle} key={index}>
-                                    <img
+                                <div style={contentStyle} key={index}>
+                                    <LazyLoadImage
                                         src={`https://backoffice.nodemy.vn${item.attributes.url}`}
                                         className="d-block w-100"
                                         alt=""

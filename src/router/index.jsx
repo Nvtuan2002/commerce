@@ -1,7 +1,7 @@
 import {
     createBrowserRouter,
 } from "react-router-dom";
-import Layout from '../components/Layout/Layout'
+import BaseLayout from '../components/Layout/Layout'
 import PrivateRoute from '../router/PrivateRouter'
 import Home from '../pages/Home/Home'
 import Products from '../pages/Products'
@@ -15,7 +15,7 @@ import ProductCateMore from "../components/Products/ProductCateMore";
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <Layout />,
+        element: <BaseLayout />,
         children: [
             {
                 path: "/",
