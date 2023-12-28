@@ -13,7 +13,7 @@ const ProductList = (props) => {
     const loadingCard = () => {
         return (
             <Row gutter={[16, 40]} className='mt-3 my-5'>
-                {[...Array(5)].map((index) => {
+                {[...Array(5)].map((_, index) => {
                     return (
                         <Col span={4.8} key={index}>
                             <Card
@@ -44,39 +44,44 @@ const ProductList = (props) => {
         return priceWithoutSymbol.trim();
     };
 
+
     return (
         <>
-            {loading ? loadingCard() : (<Row gutter={[16, 40]} className='mt-3 my-5'>
-                {data?.map((product, index) => {
-                    return (
-                        <Col span={4.8} key={index}>
-                            <Card
-                                hoverable
-                                style={{
-                                    width: 240,
-                                }}
-                                cover={
-                                    <LazyLoadImage
-                                        src={`https://backoffice.nodemy.vn${product?.attributes?.image?.data[0]?.attributes?.url}`}
-                                        alt="Product Image"
-                                        className="card-img-top"
-                                        height="250px"
-                                    />
-                                }
-                            >
-                                <Meta className='my-3' title={product?.attributes?.name} description={product?.attributes?.description.substring(0, 40)} />
-                                <h5>
-                                    <del className="card-text lead fw-bold" style={{ color: '#666', fontWeight: '15px' }}>{formatPrice(product?.attributes?.oldPrice) + ' VND'}</del> <br />
-                                </h5>
-                                <h5 className='my-3'>
-                                    <p className="card-text lead fw-bold">{formatPrice(product?.attributes?.price) + ' VND'}</p>
-                                </h5>
-                                <Link to={`/product/${product?.attributes?.slug}`} className="btn btn-outline-dark">Buy Now</Link>
-                            </Card>
-                        </Col>
-                    )
-                })}
-            </Row >)}
+            {loading ? (
+                loadingCard()
+            )
+                : (
+                    <Row gutter={[19, 16]} className='mt-3 my-5'>
+                        {data?.map((product, index) => {
+                            return (
+                                <Col span={4.8} key={index}>
+                                    <Card
+                                        hoverable
+                                        style={{
+                                            width: 240,
+                                        }}
+                                        cover={
+                                            <LazyLoadImage
+                                                src={`https://backoffice.nodemy.vn${product?.attributes?.image?.data[0]?.attributes?.url}`}
+                                                alt="Product Image"
+                                                className="card-img-top"
+                                                height="250px"
+                                            />
+                                        }
+                                    >
+                                        <Meta className='my-3' title={product?.attributes?.name} description={product?.attributes?.description.substring(0, 40)} />
+                                        <h5>
+                                            <del className="card-text lead fw-bold" style={{ color: '#666', fontWeight: '15px' }}>{formatPrice(product?.attributes?.oldPrice) + ' VND'}</del> <br />
+                                        </h5>
+                                        <h5 className='my-3'>
+                                            <p className="card-text lead fw-bold">{formatPrice(product?.attributes?.price) + ' VND'}</p>
+                                        </h5>
+                                        <Link to={`/product/${product?.attributes?.slug}`} className="btn btn-outline-dark">Buy Now</Link>
+                                    </Card>
+                                </Col>
+                            )
+                        })}
+                    </Row >)}
         </>
     );
 };

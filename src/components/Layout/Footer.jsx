@@ -1,11 +1,14 @@
 import React from 'react'
+import { Row, Col } from 'antd';
 
-const FooterComponents = () => {
+const Footer = () => {
     return (
-        <div>
-
-        </div>
+        <Row>
+            <Col span={24} style={{ textAlign: 'center' }}>
+                <p>©2024 Created by NVT</p>
+            </Col>
+        </Row>
     )
 }
 
-export default FooterComponents
+export default Footer

@@ -1,17 +1,27 @@
 import React from 'react';
-import HeaderComponents from './Header';
-import FooterComponents from './Footer';
+import Header from './Header';
+import Footer from './Footer';
 import { Outlet } from 'react-router-dom';
-import { Layout } from 'antd';
-const { Header, Footer, Content } = Layout;
+import { Layout, theme } from 'antd';
+const { Content } = Layout;
 
 const BaseLayout = () => {
-    
+
+    const {
+        token: { colorBgContainer, borderRadiusLG },
+    } = theme.useToken();
+
     return (
-        <Layout>
-            <Header><HeaderComponents /></Header>
-            <Content><Outlet></Outlet></Content>
-            <Footer><FooterComponents /></Footer>
+        <Layout style={{
+            backgroundColor: colorBgContainer,
+            borderRadius: borderRadiusLG,
+
+        }}>
+            <Header></Header>
+            <Content>
+                <Outlet></Outlet>
+            </Content>
+            <Footer></Footer>
         </Layout>
     );
 };
