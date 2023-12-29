@@ -39,13 +39,9 @@ const Products = () => {
     }
 
     return (
-        <div>
-            <div className="container my-5 py-5">
-                <div className="row justify-content-center">
-                    {loading ? <Loading /> : <ShowProducts />}
-                </div>
-            </div>
-        </div>
+        <>
+            {loading ? <Loading /> : <ShowProducts />}
+        </>
     );
 };
 

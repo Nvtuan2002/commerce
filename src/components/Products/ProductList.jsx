@@ -4,11 +4,14 @@ import { Link } from 'react-router-dom';
 import { useFetch } from '@/customHook/useFetch';
 import { Skeleton } from 'antd';
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useWindowSize } from "@uidotdev/usehooks";
 
 
 const ProductList = (props) => {
     const { data, loading } = useFetch('/products', props.query)
     const { Meta } = Card;
+    const size = useWindowSize();
+
 
     const loadingCard = () => {
         return (
@@ -51,7 +54,7 @@ const ProductList = (props) => {
                 loadingCard()
             )
                 : (
-                    <Row gutter={[19, 16]} className='mt-3 my-5'>
+                    <Row gutter={[19, 16]} className='mt-3 my-5' justify={size.width <= 522 ? 'center' : 'start'}>
                         {data?.map((product, index) => {
                             return (
                                 <Col span={4.8} key={index}>

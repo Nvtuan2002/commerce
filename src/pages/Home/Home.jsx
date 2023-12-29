@@ -28,7 +28,7 @@ const Home = () => {
 
     return (
         <>
-            <div className=" container my-4">
+            <div className=" container-lg my-4">
                 <Row gutter={[16, 40]}>
                     <Col span={16} style={{ outline: 'none' }} >
                         <Carousel autoplay style={{ outline: 'none' }} >

@@ -18,7 +18,7 @@ const BaseLayout = () => {
 
         }}>
             <Header></Header>
-            <Content>
+            <Content className='container-xl'>
                 <Outlet></Outlet>
             </Content>
             <Footer></Footer>
