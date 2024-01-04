@@ -15,7 +15,6 @@ const BaseLayout = () => {
         <Layout style={{
             backgroundColor: colorBgContainer,
             borderRadius: borderRadiusLG,
-
         }}>
             <Header></Header>
             <Content className='container-xl'>

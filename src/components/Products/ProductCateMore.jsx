@@ -1,25 +1,37 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Row, Col, Card } from 'antd';
+import { Row, Col, Card, Input, Form } from 'antd';
+import { ArrowRightOutlined } from '@ant-design/icons';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useFetch } from '@/customHook/useFetch';
-
+import { debounce, set } from "lodash";
 
 const ProductCateMore = () => {
 
     const { Meta } = Card;
     const params = useParams()
-    const [stateCheckbox, setStateCheckbox] = useState([]);
     const [query, setQuery] = useSearchParams();
     const { data } = useFetch('/products', `filters[idCategories][slug]=${params.slug}`);
-    const { data: dataCheckbox } = useFetch('/products', `filters[idCategories][slug]=${params.slug}&${stateCheckbox.map(brandName => `filters[idBrand][name][$in][]=${brandName}`).join('&')}`)
 
-    //CheckBox
+    //Price Item
+    const [statePrice, setStatePrice] = useState({
+        min: 0,
+        max: 0,
+    });
+    const handleInputChange = (name, value) => {
+        setStatePrice(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    //Checkbox Brand
+    const [stateCheckbox, setStateCheckbox] = useState([]);
     const plainOptions = Array.from(new Set((data || []).flatMap(product => (product?.attributes?.idBrand?.data?.attributes?.name || [])))) || [];
     const onCheckAllChange = (e) => {
         const updatedState = e.target.checked ? plainOptions : [];
         setStateCheckbox(updatedState);
-        setQuery({ key: updatedState });
+        setQuery(updatedState.length > 0 ? { brand: updatedState.join(',') } : {});
     };
 
     const onChange = (e) => {
@@ -28,13 +40,23 @@ const ProductCateMore = () => {
             ? stateCheckbox.filter(item => item !== value)
             : [...stateCheckbox, value];
         setStateCheckbox(updatedState);
-        setQuery({ key: updatedState });
+        setQuery(updatedState.length > 0 ? { brand: updatedState.join(',') } : {});
     };
 
     useEffect(() => {
-        const urlState = query.getAll('key');
-        setStateCheckbox(urlState);
+        const brand = query.get('brand');
+        if (brand) {
+            const brandArr = brand.split(',');
+            setStateCheckbox(brandArr);
+        }
     }, [query]);
+    //Fetch Data
+
+    const brandFilters = stateCheckbox?.map((brandName, index) => `filters[idBrand][name][$in][${index}]=${brandName}`).join('&');
+    const priceFilters = `&filters[price][$between]=${statePrice.min}&filters[price][$between]=${statePrice.max}`;
+    const apiEndpoint = `&filters[idCategories][slug]=${params.slug}${brandFilters.length >= 1 ? '&' + brandFilters : ''}${(statePrice.min && statePrice.max) != 0 ? priceFilters : ''}`;
+    const { data: dataFilter } = useFetch('/products', apiEndpoint)
+
 
 
     //Format Price
@@ -59,44 +81,72 @@ const ProductCateMore = () => {
             <Row gutter={[16, 40]}>
                 <Col span={6}>
                     <h5 className='text-center p-2' style={{ border: '1px solid #d9d9d9', borderRadius: '10px' }} >Lọc sản phẩm</h5>
-                    <h5 className='fw-700 mt-4'>HÃNG SẢN XUẤT</h5>
                     <div>
+                        <h5 className='fw-bold mt-4'>HÃNG SẢN XUẤT</h5>
                         <div>
-                            <input
-                                type="checkbox"
-                                onChange={onCheckAllChange}
-                                checked={stateCheckbox.length === plainOptions.length}
-                                style={{
-                                    width: '20px',
-                                    height: '20px',
-                                    borderRadius: '5px',
-                                }}
-                            />
-                            <span className='mx-2'>Check All</span>
+                            <div>
+                                <input
+                                    type="checkbox"
+                                    onChange={onCheckAllChange}
+                                    checked={stateCheckbox.length === plainOptions.length}
+                                    style={{
+                                        width: '20px',
+                                        height: '20px',
+                                        borderRadius: '5px',
+                                    }}
+                                />
+                                <span className='mx-2'>Check All</span>
+                            </div>
+                            <Row gutter={[16, 16]} className='justify-content-between my-3'>
+                                {plainOptions.map((item, index) => (
+                                    <Col span={8} key={index} className='d-flex'>
+                                        <input
+                                            type='checkbox'
+                                            onChange={onChange}
+                                            value={item}
+                                            checked={stateCheckbox?.includes(item)}
+                                            style={{
+                                                width: '20px',
+                                                height: '20px',
+                                                borderRadius: '5px',
+                                            }}
+                                        />
+                                        <span className='mx-2'>{item}</span>
+                                    </Col>
+                                ))}
+                            </Row>
                         </div>
-                        <Row gutter={[16, 16]} className='justify-content-between my-3'>
-                            {plainOptions.map((item, index) => (
-                                <Col span={8} key={index} className='d-flex'>
-                                    <input
-                                        type='checkbox'
-                                        onChange={onChange}
-                                        value={item}
-                                        checked={stateCheckbox?.includes(item)}
-                                        style={{
-                                            width: '20px',
-                                            height: '20px',
-                                            borderRadius: '5px',
+                    </div>
+                    <div className='mt-4'>
+                        <h5 style={{ fontWeight: 'bold' }}>KHOẢNG GIÁ</h5>
+                        <Form>
+                            <Row justify={'space-between'} align={'middle'}>
+                                <Col span={11}>
+                                    <Input
+                                        placeholder="Từ"
+                                        name='min'
+                                        onChange={(event) => {
+                                            const minValue = event.target.value;
+                                            handleInputChange('min', minValue);
                                         }}
                                     />
-                                    <span className='mx-2'>{item}</span>
                                 </Col>
-                            ))}
-                        </Row>
+                                <Col span={2} className='text-center'>
+                                    <ArrowRightOutlined />
+                                </Col>
+                                <Col span={11}>
+                                    <Input placeholder="Đến" name='max' onChange={(event) => {
+                                        const maxValue = event.target.value;
+                                        handleInputChange('max', maxValue);
+                                    }} />
+                                </Col>
+                            </Row>
+                        </Form>
                     </div>
                 </Col>
                 <Col span={18}>
                     <Row gutter={[16, 40]} className='mt-3 my-5'>
-                        {(stateCheckbox?.length >= 1 ? dataCheckbox : data)?.map((product, index) => (
+                        {(stateCheckbox?.length >= 1 ? dataFilter : data)?.map((product, index) => (
                             <Col span={6} key={index}>
                                 <Card
                                     hoverable
@@ -113,13 +163,13 @@ const ProductCateMore = () => {
                                         <p className="card-text lead fw-bold">{formatPrice(product?.attributes?.price) + ' VND'}</p>
                                     </h5>
                                     <Link to={`/product/${product?.attributes?.slug}`} className="btn btn-outline-dark">Buy Now</Link>
-                                </Card>
-                            </Col>
+                                </Card >
+                            </Col >
                         ))}
                     </Row >
-                </Col>
-            </Row>
-        </div>
+                </Col >
+            </Row >
+        </div >
     );
 };
 
