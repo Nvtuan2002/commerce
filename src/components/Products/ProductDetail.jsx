@@ -8,6 +8,8 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import { Col, Row } from 'antd';
 import { useFetch } from '@/customHook/useFetch';
+import Markdown from 'react-markdown';
+import '@/pages/Products/products.scss';
 
 
 const Product = () => {
@@ -20,7 +22,6 @@ const Product = () => {
         dispatch(addItem(data))
         console.log(data);
     }
-
 
     const Loading = () => {
         return (<>
@@ -46,6 +47,9 @@ const Product = () => {
             thumbnail: `https://backoffice.nodemy.vn${listImage?.attributes?.url}`,
         }))
     ).flat().filter((item) => item !== undefined);
+
+    //Replace Markdown to data
+    const markdown = data?.attributes?.description.replaceAll('/uploads/', `${import.meta.env.VITE_BASE_API_URL}/uploads/`);
 
     const formatPrice = (price) => {
         const formattedPrice = new Intl.NumberFormat('vi-VN', {
@@ -95,7 +99,7 @@ const Product = () => {
             <Row>
                 <h4>Mô tả:</h4>
                 <p className="lead">
-                    {data?.attributes?.description}
+                    <Markdown className='markdown'>{markdown}</Markdown>
                 </p>
             </Row>
         </>)

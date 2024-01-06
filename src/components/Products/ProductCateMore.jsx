@@ -1,75 +1,148 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Row, Col, Card, Input, Form } from 'antd';
-import { ArrowRightOutlined } from '@ant-design/icons';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Row, Col, Input, Form, Select, Checkbox, Button } from 'antd';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useFetch } from '@/customHook/useFetch';
-import { debounce, set } from "lodash";
+import ProductList from '@/components/Products/ProductList';
+import { ArrowRightOutlined } from '@ant-design/icons';
+const CheckboxGroup = Checkbox.Group;
 
 const ProductCateMore = () => {
 
-    const { Meta } = Card;
     const params = useParams()
     const [query, setQuery] = useSearchParams();
-    const { data } = useFetch('/products', `filters[idCategories][slug]=${params.slug}`);
 
-    //Price Item
-    const [statePrice, setStatePrice] = useState({
-        min: 0,
-        max: 0,
-    });
-    const handleInputChange = (name, value) => {
-        setStatePrice(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
+    let modifiedSlug = params.slug;
+    if (params.slug === 'san-pham-moi') {
+        modifiedSlug = ''
+    } else {
+        modifiedSlug = `filters[idCategories][slug]=${params.slug}`
+    }
+    const { data } = useFetch('/products', `${modifiedSlug}`);
+    const [brandCheckList, setBrandCheckList] = useState([]);
+    const [sortPrice, setSortPrice] = useState("asc")
+    const [distancePrice, setDistancePrice] = useState({});
+    const [formPriceCondition] = Form.useForm()
 
-    //Checkbox Brand
-    const [stateCheckbox, setStateCheckbox] = useState([]);
-    const plainOptions = Array.from(new Set((data || []).flatMap(product => (product?.attributes?.idBrand?.data?.attributes?.name || [])))) || [];
-    const onCheckAllChange = (e) => {
-        const updatedState = e.target.checked ? plainOptions : [];
-        setStateCheckbox(updatedState);
-        setQuery(updatedState.length > 0 ? { brand: updatedState.join(',') } : {});
-    };
-
-    const onChange = (e) => {
-        const value = e.target.value;
-        const updatedState = stateCheckbox.includes(value)
-            ? stateCheckbox.filter(item => item !== value)
-            : [...stateCheckbox, value];
-        setStateCheckbox(updatedState);
-        setQuery(updatedState.length > 0 ? { brand: updatedState.join(',') } : {});
-    };
+    //get query to object
+    function getQueryToObject() {
+        let result = {}
+        query.forEach((value, key) => {
+            result[key] = value
+        })
+        return result
+    }
 
     useEffect(() => {
-        const brand = query.get('brand');
-        if (brand) {
-            const brandArr = brand.split(',');
-            setStateCheckbox(brandArr);
+        let queryObj = getQueryToObject()
+        let defaultSort = queryObj.sort ? queryObj?.sort : "asc"
+        let defaultBrand = queryObj.brand ? queryObj?.brand?.split(',') : []
+        let defaultDistancePrice = {
+            minPrice: queryObj.minPrice,
+            maxPrice: queryObj.maxPrice,
         }
-    }, [query]);
-    //Fetch Data
+        setBrandCheckList(defaultBrand)
+        setSortPrice(defaultSort)
+        setDistancePrice(defaultDistancePrice)
+        formPriceCondition.setFieldsValue(defaultDistancePrice)
+    }, []);
 
-    const brandFilters = stateCheckbox?.map((brandName, index) => `filters[idBrand][name][$in][${index}]=${brandName}`).join('&');
-    const priceFilters = `&filters[price][$between]=${statePrice.min}&filters[price][$between]=${statePrice.max}`;
-    const apiEndpoint = `&filters[idCategories][slug]=${params.slug}${brandFilters.length >= 1 ? '&' + brandFilters : ''}${(statePrice.min && statePrice.max) != 0 ? priceFilters : ''}`;
-    const { data: dataFilter } = useFetch('/products', apiEndpoint)
+    //Brand
+    const plainOptions = Array.from(new Set((data).flatMap(product => (product?.attributes?.idBrand?.data?.attributes?.name))));
+    const brandCount = {};
+    (data).forEach(product => {
+        const brand = product?.attributes?.idBrand?.data?.attributes?.name;
+        if (brand) {
+            brandCount[brand] = brandCount[brand] ? brandCount[brand] + 1 : 1;
+        }
+        return brand;
+    })
 
+    const optionsWithCount = plainOptions.map(brand => ({
+        label: `${brand} (${brandCount[brand]})`,
+        value: brand,
+    }));
 
+    const checkAll = plainOptions.length === brandCheckList.length;
+    const indeterminate = brandCheckList.length > 0 && brandCheckList.length < plainOptions.length;
 
-    //Format Price
-    const formatPrice = (price) => {
-        const formattedPrice = new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-        }).format(price);
-
-        const priceWithoutSymbol = formattedPrice.replace('₫', '');
-
-        return priceWithoutSymbol.trim();
+    const onChangeAllBrand = (e) => {
+        const updatedState = e.target.checked ? plainOptions : [];
+        setBrandCheckList(updatedState);
+        let queryObj = getQueryToObject()
+        queryObj.brand = updatedState.join(',')
+        if (updatedState.length === 0) {
+            delete queryObj.brand
+        }
+        setQuery(queryObj);
     };
+
+    const onChangeBrand = (list) => {
+        setBrandCheckList(list);
+        let queryObj = getQueryToObject()
+        queryObj.brand = list.join(',')
+        if (list.length === 0) {
+            delete queryObj.brand
+        }
+        setQuery(queryObj);
+    };
+
+    //Sort
+    const handleSortPricechange = (value) => {
+        setSortPrice(value)
+        let queryObj = getQueryToObject()
+        queryObj.sort = value
+        setQuery(queryObj)
+    }
+
+    //Price Distance
+    const handleMinMaxChange = (value) => {
+        let queryObj = getQueryToObject()
+        if (value.minPrice) {
+            queryObj.minPrice = value.minPrice
+        } else {
+            delete queryObj.minPrice
+        }
+        if (value.maxPrice) {
+            queryObj.maxPrice = value.maxPrice
+        } else {
+            delete queryObj.maxPrice
+        }
+        setDistancePrice(value)
+        setQuery(queryObj)
+    }
+
+    //Reset Filter
+    const handleResetFilter = () => {
+        setDistancePrice({})
+        setBrandCheckList([])
+        setSortPrice('asc')
+        setQuery({})
+        formPriceCondition.resetFields()
+    }
+
+    //Fetch Data
+    let queryFilterTxt = ''
+    if (params.category !== 'san-pham-moi') {
+        queryFilterTxt = `filters[idCategories][slug]=${params.slug}`
+    }
+
+    if (distancePrice.minPrice) {
+        queryFilterTxt += `&filters[price][$gte]=${distancePrice.minPrice}`
+    }
+    if (distancePrice.maxPrice) {
+        queryFilterTxt += `&filters[price][$lte]=${distancePrice.maxPrice}`
+    }
+
+    if (sortPrice) {
+        queryFilterTxt += `&sort[1]=price:${sortPrice}`
+    }
+
+    if (brandCheckList.length >= 0) {
+        brandCheckList.forEach((value, index) => {
+            queryFilterTxt += `&filters[idBrand][name][$in][${index}]=${value}`
+        })
+    }
 
     return (
         <div className='container mt-3'>
@@ -78,95 +151,65 @@ const ProductCateMore = () => {
                     <h2 className='fw-bold'>{data[0]?.attributes?.idCategories?.data[0]?.attributes?.name} <small style={{ fontSize: '14px', opacity: '0.8' }}>(Tổng {data.length} sản phẩm)</small></h2>
                 </Col>
             </Row>
-            <Row gutter={[16, 40]}>
-                <Col span={6}>
+            <Row justify={'space-between'}>
+                <Col span={5}>
                     <h5 className='text-center p-2' style={{ border: '1px solid #d9d9d9', borderRadius: '10px' }} >Lọc sản phẩm</h5>
                     <div>
                         <h5 className='fw-bold mt-4'>HÃNG SẢN XUẤT</h5>
                         <div>
-                            <div>
-                                <input
-                                    type="checkbox"
-                                    onChange={onCheckAllChange}
-                                    checked={stateCheckbox.length === plainOptions.length}
-                                    style={{
-                                        width: '20px',
-                                        height: '20px',
-                                        borderRadius: '5px',
-                                    }}
-                                />
-                                <span className='mx-2'>Check All</span>
-                            </div>
-                            <Row gutter={[16, 16]} className='justify-content-between my-3'>
-                                {plainOptions.map((item, index) => (
-                                    <Col span={8} key={index} className='d-flex'>
-                                        <input
-                                            type='checkbox'
-                                            onChange={onChange}
-                                            value={item}
-                                            checked={stateCheckbox?.includes(item)}
-                                            style={{
-                                                width: '20px',
-                                                height: '20px',
-                                                borderRadius: '5px',
-                                            }}
-                                        />
-                                        <span className='mx-2'>{item}</span>
-                                    </Col>
-                                ))}
+                            <Checkbox indeterminate={indeterminate} onChange={onChangeAllBrand} checked={checkAll}>
+                                Check all
+                            </Checkbox>
+                            <Row className='my-3'>
+                                <CheckboxGroup options={optionsWithCount} value={brandCheckList} onChange={onChangeBrand} />
                             </Row>
                         </div>
                     </div>
+                    <div>
+                        <h5 className='fw-bold mt-4'>Sắp xếp</h5>
+                        <Select
+                            value={sortPrice}
+                            onChange={handleSortPricechange}
+                            options={[{
+                                label: 'Giá tăng dần',
+                                value: 'asc'
+                            }, {
+                                label: 'Giá giảm dần',
+                                value: 'desc'
+                            }]}
+                        ></Select>
+                    </div>
                     <div className='mt-4'>
                         <h5 style={{ fontWeight: 'bold' }}>KHOẢNG GIÁ</h5>
-                        <Form>
-                            <Row justify={'space-between'} align={'middle'}>
+                        <Form
+                            name="price-form"
+                            onFinish={handleMinMaxChange}
+                            form={formPriceCondition}
+                        >
+                            <Row justify={'center'}>
                                 <Col span={11}>
-                                    <Input
-                                        placeholder="Từ"
-                                        name='min'
-                                        onChange={(event) => {
-                                            const minValue = event.target.value;
-                                            handleInputChange('min', minValue);
-                                        }}
-                                    />
+                                    <Form.Item
+                                        name="minPrice"
+                                    ><Input placeholder='Giá thấp nhất' />
+                                    </Form.Item>
                                 </Col>
-                                <Col span={2} className='text-center'>
+                                <Col span={2} style={{ textAlign: 'center', marginTop: 5 }}>
                                     <ArrowRightOutlined />
                                 </Col>
                                 <Col span={11}>
-                                    <Input placeholder="Đến" name='max' onChange={(event) => {
-                                        const maxValue = event.target.value;
-                                        handleInputChange('max', maxValue);
-                                    }} />
+                                    <Form.Item
+                                        name="maxPrice"
+                                    ><Input placeholder='Giá cao nhất' />
+                                    </Form.Item>
                                 </Col>
                             </Row>
+                            <Button htmlType='submit'>Lọc</Button>
+                            <Button onClick={handleResetFilter} style={{ marginLeft: '15px' }} >Xóa Lọc</Button>
                         </Form>
                     </div>
-                </Col>
+                </Col >
                 <Col span={18}>
-                    <Row gutter={[16, 40]} className='mt-3 my-5'>
-                        {(stateCheckbox?.length >= 1 ? dataFilter : data)?.map((product, index) => (
-                            <Col span={6} key={index}>
-                                <Card
-                                    hoverable
-                                    style={{
-                                        width: 240,
-                                    }}
-                                    cover={<img src={`https://backoffice.nodemy.vn${product?.attributes?.image?.data[0]?.attributes?.url}`} className="card-img-top" height="250px" />}
-                                >
-                                    <Meta className='my-3' title={product?.attributes?.name} description={product?.attributes?.description.substring(0, 40)} />
-                                    <h5>
-                                        <del className="card-text lead fw-bold" style={{ color: '#666', fontWeight: '15px' }}>{formatPrice(product?.attributes?.oldPrice) + ' VND'}</del> <br />
-                                    </h5>
-                                    <h5 className='my-3'>
-                                        <p className="card-text lead fw-bold">{formatPrice(product?.attributes?.price) + ' VND'}</p>
-                                    </h5>
-                                    <Link to={`/product/${product?.attributes?.slug}`} className="btn btn-outline-dark">Buy Now</Link>
-                                </Card >
-                            </Col >
-                        ))}
-                    </Row >
+                    <ProductList query={queryFilterTxt} />
                 </Col >
             </Row >
         </div >

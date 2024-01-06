@@ -14,9 +14,10 @@ export function useFetch(url, query = '') {
   }
   const [paging, setPaging] = useState({
     page: 1,
-    pageSize: 5,
+    pageSize: 8,
     total: 10,
   });
+
 
   url += `?populate=*&pagination[page]=${paging.page}&pagination[pageSize]=${paging.pageSize}&${query}`;
   useEffect(() => {
@@ -38,7 +39,7 @@ export function useFetch(url, query = '') {
     return () => {
       componentMounted = false;
     };
-  }, [url, paging.page, paging.pageSize, reload, query]);
+  }, [url, paging.page, reload, query]);
 
   return { data, setData, paging, setPaging, reload, reloadData, loading, setLoading };
 }

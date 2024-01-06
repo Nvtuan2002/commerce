@@ -1,17 +1,13 @@
 import React from 'react';
-import { Row, Col, Card } from 'antd';
+import { Row, Col, Card, Button, Pagination } from 'antd';
 import { Link } from 'react-router-dom';
 import { useFetch } from '@/customHook/useFetch';
 import { Skeleton } from 'antd';
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { useWindowSize } from "@uidotdev/usehooks";
-
 
 const ProductList = (props) => {
-    const { data, loading } = useFetch('/products', props.query)
+    const { data, loading, paging, setPaging } = useFetch('/products', props.query)
     const { Meta } = Card;
-    const size = useWindowSize();
-
 
     const loadingCard = () => {
         return (
@@ -54,37 +50,58 @@ const ProductList = (props) => {
                 loadingCard()
             )
                 : (
-                    <Row gutter={[19, 16]} className='mt-3 my-5' justify={size.width <= 522 ? 'center' : 'start'}>
-                        {data?.map((product, index) => {
-                            return (
-                                <Col span={4.8} key={index}>
-                                    <Card
-                                        hoverable
-                                        style={{
-                                            width: 240,
-                                        }}
-                                        cover={
-                                            <LazyLoadImage
-                                                src={`https://backoffice.nodemy.vn${product?.attributes?.image?.data[0]?.attributes?.url}`}
-                                                alt="Product Image"
-                                                className="card-img-top"
-                                                height="250px"
-                                            />
-                                        }
-                                    >
-                                        <Meta className='my-3' title={product?.attributes?.name} description={product?.attributes?.description.substring(0, 40)} />
-                                        <h5>
-                                            <del className="card-text lead fw-bold" style={{ color: '#666', fontWeight: '15px' }}>{formatPrice(product?.attributes?.oldPrice) + ' VND'}</del> <br />
-                                        </h5>
-                                        <h5 className='my-3'>
-                                            <p className="card-text lead fw-bold">{formatPrice(product?.attributes?.price) + ' VND'}</p>
-                                        </h5>
-                                        <Link to={`/product/${product?.attributes?.slug}`} className="btn btn-outline-dark">Buy Now</Link>
-                                    </Card>
-                                </Col>
-                            )
-                        })}
-                    </Row >)}
+                    <>
+                        <Row gutter={[19, 16]} className='mt-3'>
+                            {data?.map((product, index) => {
+                                return (
+                                    <Col xs={24} sm={12} md={8} lg={6} xl={6} key={index}>
+                                        <Card
+                                            hoverable
+                                            style={{
+                                                width: '100%',
+                                            }}
+                                            cover={
+                                                <LazyLoadImage
+                                                    src={`https://backoffice.nodemy.vn${product?.attributes?.image?.data[0]?.attributes?.url}`}
+                                                    alt="Product Image"
+                                                    className="card-img-top"
+                                                    height="250px"
+                                                />
+                                            }
+                                        >
+                                            <Meta className='my-3' style={{ height: 80 }} title={product?.attributes?.name} description={product?.attributes?.description.substring(0, 40)} />
+                                            <h5>
+                                                <del className="card-text lead fw-bold" style={{ color: '#666', fontWeight: '15px' }}>{formatPrice(product?.attributes?.oldPrice) + ' VND'}</del> <br />
+                                            </h5>
+                                            <h5 className='my-3'>
+                                                <p className="card-text lead fw-bold">{formatPrice(product?.attributes?.price) + ' VND'}</p>
+                                            </h5>
+                                            <Link to={`/product/${product?.attributes?.slug}`} className="btn btn-outline-dark my-3">Buy Now</Link>
+                                            <Button type="dashed" block>
+                                                Còn lại {product?.attributes?.quantityAvailable}
+                                            </Button>
+                                        </Card>
+
+                                    </Col>
+                                )
+                            })}
+                        </Row >
+                        <Row justify={'center'} style={{ marginTop: 20 }}>
+                            <Pagination
+                                current={paging.page}
+                                pageSize={paging.pageSize}
+                                total={paging.total}
+                                onChange={(page) => {
+                                    setPaging({
+                                        ...paging,
+                                        page: page,
+                                    })
+                                }} />
+                        </Row>
+                        ;
+                    </>
+                )
+            }
         </>
     );
 };

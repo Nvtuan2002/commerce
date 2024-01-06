@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react'
-import Products from '../Products'
+import Products from '../Products/Products'
 import { useState } from 'react'
 import { getBanner } from '../../services/Banner'
 import { Row, Col, Carousel } from 'antd'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
+import ProductCate from '../../components/Products/ProductCate'
 
 const Home = () => {
     //1 State

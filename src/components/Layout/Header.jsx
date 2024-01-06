@@ -13,7 +13,6 @@ import {
 } from '@ant-design/icons';
 import { useWindowSize } from "@uidotdev/usehooks";
 
-
 const Header = () => {
     const state = useSelector((state) => state.cart);
     const token = useSelector((state) => state.auth.token);
@@ -76,6 +75,7 @@ const Header = () => {
                         onClose={onClose}
                         open={open}
                         key={placement}
+                        width={size.width <= 376 ? 'calc(100% - 50px)' : null}
                     >
                         <Menu
                             theme="light"
@@ -138,12 +138,12 @@ const Header = () => {
         }));
         return (<>
             <Row className="container-lg pt-4" justify="center" style={{ borderBottom: '1px solid #9a9a9a' }}>
-                <Col xs={24} sm={24} md={3} lg={6} xl={8}>
+                <Col xs={24} sm={3} md={3} lg={6} xl={8}>
                     <h3 className="fw-bold logo" onClick={() => {
                         nav(`/`);
                     }}>NVT</h3>
                 </Col>
-                <Col xs={24} sm={24} md={11} lg={10} xl={8}>
+                <Col xs={24} sm={8} md={11} lg={10} xl={8}>
                     <Row
                         style={{
                             width: '100%',
@@ -168,7 +168,7 @@ const Header = () => {
                         />
                     </Row>
                 </Col>
-                <Col xs={24} sm={24} md={10} lg={8} xl={8}>
+                <Col xs={24} sm={12} md={10} lg={8} xl={8}>
                     <Row align='end'>
                         <Space align="start">
                             {token ? <Logout /> : <Row><Login /> <Signup /></Row>}

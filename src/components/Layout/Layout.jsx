@@ -17,7 +17,7 @@ const BaseLayout = () => {
             borderRadius: borderRadiusLG,
         }}>
             <Header></Header>
-            <Content className='container-xl'>
+            <Content className='container-lg'>
                 <Outlet></Outlet>
             </Content>
             <Footer></Footer>
