@@ -19,7 +19,11 @@ const ProductCate = (props) => {
                     }
                 </Col>
             </Row>
-            <ProductList query={`${props.query}`}></ProductList>
+            <ProductList
+                query={`${props.query}`}
+                direction={`${props.direction}`}
+                showPagination={`${props.showPagination}`}
+            ></ProductList >
         </>
     );
 };
