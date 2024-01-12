@@ -13,11 +13,8 @@ const ProductCateMore = () => {
     const [query, setQuery] = useSearchParams();
 
     let modifiedSlug = params.slug;
-    if (params.slug === 'san-pham-moi') {
-        modifiedSlug = ''
-    } else {
-        modifiedSlug = `filters[idCategories][slug]=${params.slug}`
-    }
+    modifiedSlug = `filters[idCategories][slug]=${params.slug}`
+
     const { data } = useFetch('/products', `${modifiedSlug}`);
     const [brandCheckList, setBrandCheckList] = useState([]);
     const [sortPrice, setSortPrice] = useState("asc")
@@ -48,9 +45,9 @@ const ProductCateMore = () => {
     }, []);
 
     //Brand
-    const plainOptions = Array.from(new Set((data).flatMap(product => (product?.attributes?.idBrand?.data?.attributes?.name))));
+    const plainOptions = Array.from(new Set((data)?.flatMap(product => (product?.attributes?.idBrand?.data?.attributes?.name))));
     const brandCount = {};
-    (data).forEach(product => {
+    (data)?.forEach(product => {
         const brand = product?.attributes?.idBrand?.data?.attributes?.name;
         if (brand) {
             brandCount[brand] = brandCount[brand] ? brandCount[brand] + 1 : 1;

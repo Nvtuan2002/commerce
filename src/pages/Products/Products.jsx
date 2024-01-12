@@ -7,6 +7,8 @@ const Products = () => {
         <>
             <ProductCate
                 title='Sản phẩm mới'
+                showButton={false}
+                pageSize={4}
             ></ProductCate>
             <ProductCate
                 title='Laptop Gamming'

@@ -45,6 +45,10 @@ const Product = () => {
             thumbnail: `https://backoffice.nodemy.vn${listImage?.attributes?.url}`,
         }))
     ).flat().filter((item) => item !== undefined);
+    let categories = data?.attributes?.idCategories?.data
+    let queryWithCategories = categories?.reduce((txt, item, index) => {
+        return txt + `&filters[idCategories][slug][$in][${index}]=${item?.attributes?.slug}`
+    }, `filters[slug][$ne]=${params.slug}`)
 
     //Replace Markdown to data
     const markdown = data?.attributes?.description.replaceAll('/uploads/', `${import.meta.env.VITE_BASE_API_URL}/uploads/`);
@@ -62,8 +66,8 @@ const Product = () => {
 
     const ShowProduct = () => {
         return (<>
-            <Row gutter={[100, 20]} style={{ marginBottom: '36px' }}>
-                <Col span={16}>
+            <Row gutter={[50, 20]} style={{ marginBottom: '36px' }}>
+                <Col span={18}>
                     <ImageGallery items={images} />
                     <Col style={{ marginTop: '105px', padding: 0 }} >
                         <h4 className='text-uppercase text-black-50'>
@@ -95,13 +99,26 @@ const Product = () => {
                     <h4>Mô tả:</h4>
                     <Markdown className='markdown'>{markdown}</Markdown>
                 </Col>
-                <Col span={8}>
+                <Col span={6}>
                     <ProductCate
                         query={`filters[idBrand][name]=${data?.attributes?.idBrand?.data?.attributes?.name}&filters[slug][$ne]=${params.slug}`}
-                        title='Sản phẩm liên quan'
+                        title='Sản phẩm cùng hãng'
                         direction='column'
-                        showPagination='false' />
+                        pageSize={4}
+                        showButton={false}
+                        showPagination={false} />
                 </Col>
+            </Row>
+            <Row>
+                <ProductCate
+                    query={queryWithCategories}
+                    link={`/products/category/san-pham-moi`}
+                    title='Sản phẩm liên quan'
+                    direction='row'
+                    showPagination={false}
+                    showButton={false}
+                    pageSize={4}
+                />
             </Row>
         </>)
     }

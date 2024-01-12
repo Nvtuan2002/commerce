@@ -5,16 +5,16 @@ import { useFetch } from '@/customHook/useFetch';
 import { Skeleton } from 'antd';
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
-const ProductList = ({ query, direction = 'row', showPagination = 'true', pageSize = 4 }) => {
-    const { data, loading, paging, setPaging } = useFetch('/products', query)
+const ProductList = ({ query, direction = 'row', showPagination = true, pageSize = 8 }) => {
+    const { data, loading, paging, setPaging } = useFetch('/products', query, pageSize)
     const { Meta } = Card;
 
     const loadingCard = () => {
         return (
-            <Row gutter={[16, 40]} className='mt-3 my-5'>
+            <Row gutter={[16, 40]} style={{ flexDirection: direction }} className='mt-3 my-5'>
                 {[...Array(5)].map((_, index) => {
                     return (
-                        <Col span={4.8} key={index}>
+                        <Col md={direction == 'column' ? 24 : 6} sm={24} key={index}>
                             <Card
                                 hoverable
                                 style={{
@@ -88,7 +88,7 @@ const ProductList = ({ query, direction = 'row', showPagination = 'true', pageSi
                     </Row >
                     <Row justify={'center'} style={{ marginTop: 20 }}>
                         {
-                            (showPagination == 'true' ?
+                            showPagination == 'true' ?
                                 < Pagination
                                     current={paging.page}
                                     pageSize={paging.pageSize}
@@ -98,7 +98,7 @@ const ProductList = ({ query, direction = 'row', showPagination = 'true', pageSi
                                             ...paging,
                                             page: page,
                                         })
-                                    }} /> : '')
+                                    }} /> : ''
                         }
                     </Row>
                 </>

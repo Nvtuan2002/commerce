@@ -20,16 +20,15 @@ export const cartSlice = createSlice({
         deleteItem: (state, action) => {
             const product = action.payload;
             const exist = state.find((item) => item.id === product.id);
-
             if (exist.qty === 1) {
                 return state.filter((item) => item.id !== product.id);
-            } else {
+            }
+            else {
                 return state.map((item) =>
                     item.id === product.id ? { ...exist, qty: exist.qty - 1 } : item
                 );
             }
-        }
-        ,
+        },
         qtyItem: (state, action) => {
             const product = action.payload;
             const exist = state.find((item) => item.id === product.id);

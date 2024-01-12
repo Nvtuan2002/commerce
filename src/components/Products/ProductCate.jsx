@@ -4,25 +4,28 @@ import { Link } from 'react-router-dom';
 import ProductList from '@/components/Products/ProductList';
 
 const ProductCate = (props) => {
+    const { title, link, query, showButton = true } = props
 
     return (
         <>
             <Row justify="space-between">
                 <Col span={24}>
-                    <Divider orientation="left"><h2 className='fw-bold'>{props.title} </h2></Divider>
+                    {title != undefined ?
+                        <Divider orientation="left"><h3 className='fw-bold'>{title}</h3></Divider>
+                        : ''}
                 </Col>
             </Row>
             <Row className='justify-content-end' style={{ marginBottom: 15 }}>
                 <Col>
-                    {props.link === undefined ? '' :
-                        <Link to={`${props.link}`} className="btn btn-outline-dark">See More</Link>
+                    {showButton ?
+                        <Link to={`${link}`} className="btn btn-outline-dark">See More</Link>
+                        : ''
                     }
                 </Col>
             </Row>
             <ProductList
-                query={`${props.query}`}
-                direction={`${props.direction}`}
-                showPagination={`${props.showPagination}`}
+                query={query}
+                {...props}
             ></ProductList >
         </>
     );
