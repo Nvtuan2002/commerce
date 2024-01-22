@@ -1,9 +1,8 @@
 import React from 'react'
-import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { qtyItem, deleteItem } from '@/redux/Cart';
 import { Link } from 'react-router-dom'
-import { InputNumber, Empty, Button, Table } from 'antd';
+import { InputNumber, Empty, Button, Table, Row, Col } from 'antd';
 
 const Cart = () => {
     const state = useSelector((state) => state.cart);
@@ -92,14 +91,19 @@ const Cart = () => {
 
     const cartItems = () => {
         return (<>
-            <Table
-                style={{
-                    marginBottom: 16,
-                }}
-                columns={columns}
-                dataSource={data}
-                pagination={false}
-/>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                <Col sm={24} md={24}>
+                    <Table
+                        style={{
+                            marginBottom: 16,
+                        }}
+                        scroll={{ x: 10 }}
+                        columns={columns}
+                        dataSource={data}
+                        pagination={false}
+                    />
+                </Col>
+            </Row>
         </>
         );
     }
@@ -107,17 +111,14 @@ const Cart = () => {
 
     return (
         <>
-            <div className="container my-5 py-5">
-                <div className="row">
-                    <div className="col-12 mb-5">
-                        <h1 className="text-center display-6 fw-bolder">Shoping Cart</h1>
-                        <hr />
-                    </div>
-                </div>
-                {!token && state.length === 0 && emptyCart()}
-                {state.length !== 0 && cartItems()}
-                {state.length !== 0 && button()}
-            </div>
+            <Row style={{ textAlign: 'center' }}>
+                <Col sm={24} md={24} className="display-6 fw-bold my-3">Shoping Cart</Col>
+                <Col sm={24} md={24}>
+                    {!token && state.length === 0 && emptyCart()}
+                    {state.length !== 0 && cartItems()}
+                    {state.length !== 0 && button()}
+                </Col>
+            </Row >
         </>
     )
 }

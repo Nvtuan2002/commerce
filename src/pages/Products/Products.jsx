@@ -13,12 +13,13 @@ const Products = () => {
             <ProductCate
                 title='Laptop Gamming'
                 query='filters[idCategories][slug]=laptop-gaming'
-                link='/products/category/laptop-gaming'
+                link='/category/laptop-gaming'
             ></ProductCate>
             <ProductCate
+            
                 title='Laptop Xịn'
                 query='filters[idCategories][slug]=laptop-xin'
-                link='/products/category/laptop-xin'
+                link='/category/laptop-xin'
             ></ProductCate>
         </>
     );

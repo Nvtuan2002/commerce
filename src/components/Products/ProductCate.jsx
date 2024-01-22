@@ -8,25 +8,27 @@ const ProductCate = (props) => {
 
     return (
         <>
-            <Row justify="space-between">
+            <Row>
                 <Col span={24}>
                     {title != undefined ?
-                        <Divider orientation="left"><h3 className='fw-bold'>{title}</h3></Divider>
+                        <Divider orientation="left"><h4 className='fw-bold'>{title}</h4></Divider>
                         : ''}
                 </Col>
             </Row>
-            <Row className='justify-content-end' style={{ marginBottom: 15 }}>
-                <Col>
-                    {showButton ?
-                        <Link to={`${link}`} className="btn btn-outline-dark">See More</Link>
-                        : ''
-                    }
-                </Col>
-            </Row>
-            <ProductList
-                query={query}
-                {...props}
-            ></ProductList >
+            <Col
+                style={{ marginBottom: 15, textAlign: 'end' }}
+            >
+                {showButton ?
+                    <Link to={`${link}`} className="btn btn-outline-dark">See More</Link>
+                    : ''
+                }
+            </Col>
+            <Col span={24}>
+                <ProductList
+                    query={query}
+                    {...props}
+                ></ProductList >
+            </Col>
         </>
     );
 };

@@ -6,7 +6,7 @@ import PrivateRoute from '@/router/PrivateRouter'
 import Home from '@/pages/Home/Home'
 import Products from '@/pages/Products/Products'
 import ProductDetail from '@/components/Products/ProductDetail'
-import ProductCateMore from "@/components/Products/ProductCateMore";
+import Categories from "@/components/Products/Categories";
 import Cart from '@/pages/Cart'
 import About from "@/pages/About";
 import Checkout from "@/pages/Checkout";
@@ -30,8 +30,12 @@ export const router = createBrowserRouter([
                 element: <ProductDetail />
             },
             {
-                path: "/products/category/:slug",
-                element: <ProductCateMore />
+                path: "/category/:category",
+                element: <Categories />
+            },
+            {
+                path: "/tim",
+                element: <Categories />
             },
             {
                 path: "/cart",

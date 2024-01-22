@@ -12,6 +12,7 @@ import {
     MenuUnfoldOutlined,
 } from '@ant-design/icons';
 import { useWindowSize } from "@uidotdev/usehooks";
+import SearchComponent from "../Search/SearchComponent";
 
 const Header = () => {
     const state = useSelector((state) => state.cart);
@@ -46,7 +47,7 @@ const Header = () => {
 
         return (
             <>
-                <Row>
+                <Row className="header">
                     <Col xs={12} sm={12} md={12} lg={3} xl={6}>
                         <h3 className="fw-bold logo" style={{ margin: '15px 0px 0px 20px' }} onClick={() => {
                             nav(`/`);
@@ -127,6 +128,11 @@ const Header = () => {
                         </Row>
                     </Drawer>
                 </Row>
+                <Row style={{ display: 'flex', marginTop: 15 }} justify={'center'}>
+                    <Col xs={20} md={16}>
+                        <SearchComponent />
+                    </Col>
+                </Row>
             </>
         );
     }
@@ -137,7 +143,7 @@ const Header = () => {
             label: (<h5>{key}</h5>),
         }));
         return (<>
-            <Row className="container-lg pt-4" justify="center" style={{ borderBottom: '1px solid #9a9a9a' }}>
+            <Row className="container-lg pt-4 header" justify="center" style={{ borderBottom: '1px solid #9a9a9a' }}>
                 <Col xs={24} sm={3} md={3} lg={6} xl={8}>
                     <h3 className="fw-bold logo" onClick={() => {
                         nav(`/`);
@@ -181,6 +187,11 @@ const Header = () => {
                     </Row>
                 </Col>
             </Row>
+            <Row style={{ display: 'flex', marginTop: 15 }} justify={'center'}>
+                <Col xs={12} md={12}>
+                    <SearchComponent />
+                </Col>
+            </Row >
         </>)
     }
 

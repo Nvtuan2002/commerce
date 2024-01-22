@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { addItem, deleteItem } from '@/redux/Cart';
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
-import { Col, Row } from 'antd';
+import { Col, Row, InputNumber } from 'antd';
 import { useFetch } from '@/customHook/useFetch';
 import Markdown from 'react-markdown';
 import '@/components/Products/products.scss';
@@ -41,7 +41,7 @@ const Product = () => {
     const newArrImage = Object.values(data);
     const images = newArrImage?.map((item) =>
         item?.image?.data?.map((listImage) => ({
-            original: `https://backoffice.nodemy.vn${listImage?.attributes?.url}`,
+            original: `${import.meta.env.VITE_BASE_API_URL}${listImage?.attributes?.url}`,
             thumbnail: `https://backoffice.nodemy.vn${listImage?.attributes?.url}`,
         }))
     ).flat().filter((item) => item !== undefined);
@@ -66,19 +66,25 @@ const Product = () => {
 
     const ShowProduct = () => {
         return (<>
-            <Row gutter={[50, 20]} style={{ marginBottom: '36px' }}>
-                <Col span={18}>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} style={{ marginBottom: '36px' }}>
+                <Row className='display-6 fw-bold'>{data?.attributes?.name}
+                </Row>
+
+                <Col xs={24} md={18}>
                     <ImageGallery items={images} />
-                    <Col style={{ marginTop: '105px', padding: 0 }} >
-                        <h4 className='text-uppercase text-black-50'>
+                    <Col style={{ marginTop: '55px', padding: 0 }} >
+                        <h4 className='text-uppercase text-black-50 fw-bold'>
                             {data.attributes?.idBrand?.data?.attributes?.name}
                         </h4>
-                        <Row className='display-6 my-5'>{data?.attributes?.name}</Row>
-                        <h5>Thông sổ sản phẩm</h5>
+                        <h5 style={{ fontWeight: 'bold' }}>Thông số sản phẩm</h5>
                         <p className='lead fw-medium'>
-                            <li>CPU: {data?.attributes?.cpu}</li>
-                            <li>RAM: {data?.attributes?.ram}</li>
-                            <li>Quantity Available: {data?.attributes?.quantityAvailable}</li>
+                            {
+                                data?.attributes?.cpu ?
+                                    <li>CPU: {data?.attributes?.cpu}</li>
+                                    : null
+                            }
+                            {data?.attributes?.ram ? <li>RAM: {data?.attributes?.ram}</li> : null}
+                            {data?.attributes?.quantityAvailable ? <li>Quantity Available: {data?.attributes?.quantityAvailable}</li> : <li>Hết hàng</li>}
                         </p>
 
                         <h4 className='my-4'> Giá cũ:
@@ -90,6 +96,15 @@ const Product = () => {
                             Giá mới:
                             {formatPrice(data?.attributes?.price) + 'VND'}
                         </h3>
+                        <h5>
+                            Số lượng:
+                            <InputNumber
+                                defaultValue={1}
+                                min={1}
+                                max={data?.attributes?.quantityAvailable || 1}
+                            >
+                            </InputNumber>
+                        </h5>
                         <button className='btn btn-outline-dark px-4 py-2 my-5'
                             onClick={() => {
                                 addProduct(data)
@@ -99,7 +114,7 @@ const Product = () => {
                     <h4>Mô tả:</h4>
                     <Markdown className='markdown'>{markdown}</Markdown>
                 </Col>
-                <Col span={6}>
+                <Col xs={24} md={6}>
                     <ProductCate
                         query={`filters[idBrand][name]=${data?.attributes?.idBrand?.data?.attributes?.name}&filters[slug][$ne]=${params.slug}`}
                         title='Sản phẩm cùng hãng'

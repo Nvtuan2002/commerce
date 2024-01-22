@@ -4,21 +4,28 @@ import { Link } from 'react-router-dom';
 import { useFetch } from '@/customHook/useFetch';
 import { Skeleton } from 'antd';
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useEffect } from 'react';
 
-const ProductList = ({ query, direction = 'row', showPagination = true, pageSize = 8 }) => {
+const ProductList = ({ query, direction = 'row', showPagination = true, pageSize = 8, transferDataToParent }) => {
     const { data, loading, paging, setPaging } = useFetch('/products', query, pageSize)
     const { Meta } = Card;
+
+    useEffect(() => {
+        if (typeof transferDataToParent === 'function') {
+            transferDataToParent({ data, paging, setPaging, loading })
+        }
+    }, [data, paging, setPaging, loading])
 
     const loadingCard = () => {
         return (
             <Row gutter={[16, 40]} style={{ flexDirection: direction }} className='mt-3 my-5'>
                 {[...Array(5)].map((_, index) => {
                     return (
-                        <Col md={direction == 'column' ? 24 : 6} sm={24} key={index}>
+                        <Col xs={24} sm={12} md={direction == 'column' ? 24 : 8} lg={direction == 'column' ? 24 : 6} key={index}>
                             <Card
                                 hoverable
                                 style={{
-                                    width: 240,
+                                    width: '100%',
                                 }}
                                 cover={<Skeleton.Image active />}
                             >
@@ -50,16 +57,15 @@ const ProductList = ({ query, direction = 'row', showPagination = true, pageSize
                 loadingCard()
             )
                 : <>
-                    <Row gutter={[19, 16]} style={{ flexDirection: direction }}>
+                    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} style={{ flexDirection: direction }}>
                         {data?.map((product, index) => {
                             return (
-                                <Col xs={24} sm={12} md={direction == 'column' ? 24 : 6} key={index}
-                                    width='100%'
-                                >
+                                <Col xs={24} sm={12} md={direction == 'column' ? 24 : 8} lg={direction == 'column' ? 24 : 6} key={index}>
                                     <Card
                                         hoverable
                                         style={{
                                             width: '100%',
+                                            maxWidth: '350px',
                                         }}
                                         cover={
                                             <LazyLoadImage
@@ -67,6 +73,10 @@ const ProductList = ({ query, direction = 'row', showPagination = true, pageSize
                                                 alt="Product Image"
                                                 className="card-img-top"
                                                 height="250px"
+                                                style={{
+                                                    objectFit: 'cover',
+                                                    objectPosition: 'center',
+                                                }}
                                             />
                                         }
                                     >
@@ -90,9 +100,9 @@ const ProductList = ({ query, direction = 'row', showPagination = true, pageSize
                         {
                             showPagination == 'true' ?
                                 < Pagination
-                                    current={paging.page}
-                                    pageSize={paging.pageSize}
-                                    total={paging.total}
+                                    current={paging?.page}
+                                    pageSize={paging?.pageSize}
+                                    total={paging?.total}
                                     onChange={(page) => {
                                         setPaging({
                                             ...paging,

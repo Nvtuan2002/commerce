@@ -1,21 +1,21 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Row, Col, Input, Form, Select, Checkbox, Button } from 'antd';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { Row, Col, Input, Form, Select, Checkbox, Button, Collapse } from 'antd';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useFetch } from '@/customHook/useFetch';
 import ProductList from '@/components/Products/ProductList';
 import { ArrowRightOutlined } from '@ant-design/icons';
 const CheckboxGroup = Checkbox.Group;
 
-const ProductCateMore = () => {
+const ProductCategories = () => {
 
     const params = useParams()
     const [query, setQuery] = useSearchParams();
 
-    let modifiedSlug = params.slug;
-    modifiedSlug = `filters[idCategories][slug]=${params.slug}`
+    const [childData, setChildData] = useState({})
+    let { data: categoriesList } = useFetch('/categories', '', 100)
+    let { data: brands } = useFetch('/brands', '', 100)
 
-    const { data } = useFetch('/products', `${modifiedSlug}`);
     const [brandCheckList, setBrandCheckList] = useState([]);
     const [sortPrice, setSortPrice] = useState("asc")
     const [distancePrice, setDistancePrice] = useState({});
@@ -45,34 +45,33 @@ const ProductCateMore = () => {
     }, []);
 
     //Brand
-    const plainOptions = Array.from(new Set((data)?.flatMap(product => (product?.attributes?.idBrand?.data?.attributes?.name))));
-    const brandCount = {};
-    (data)?.forEach(product => {
-        const brand = product?.attributes?.idBrand?.data?.attributes?.name;
-        if (brand) {
-            brandCount[brand] = brandCount[brand] ? brandCount[brand] + 1 : 1;
-        }
-        return brand;
-    })
+    const plainOptions = (brands)?.flatMap((product) => ({
+        label: product?.attributes?.name,
+        value: product?.attributes?.products?.data?.length ? product?.attributes?.products?.data?.length : 0,
+    }))
 
-    const optionsWithCount = plainOptions.map(brand => ({
-        label: `${brand} (${brandCount[brand]})`,
-        value: brand,
-    }));
+    const optionsWithCount = plainOptions
+        ?.filter(brand => brand.value !== 0)
+        .map(brand => ({
+            label: `${brand.label} (${brand.value})`,
+            value: brand.label,
+        }));
 
-    const checkAll = plainOptions.length === brandCheckList.length;
-    const indeterminate = brandCheckList.length > 0 && brandCheckList.length < plainOptions.length;
+    // const checkAll = plainOptions.filter(brand => brand.value > 0).map(brand => brand.label).length === brandCheckList.length;
+    // const indeterminate = brandCheckList.length > 0 && brandCheckList.length < plainOptions.filter(brand => brand.value > 0).map(brand => brand.label).length;
 
-    const onChangeAllBrand = (e) => {
-        const updatedState = e.target.checked ? plainOptions : [];
-        setBrandCheckList(updatedState);
-        let queryObj = getQueryToObject()
-        queryObj.brand = updatedState.join(',')
-        if (updatedState.length === 0) {
-            delete queryObj.brand
-        }
-        setQuery(queryObj);
-    };
+    // const onChangeAllBrand = (e) => {
+    //     const updatedState = e.target.checked
+    //         ? plainOptions.filter(brand => brand.value > 0).map(brand => brand.label)
+    //         : [];
+    //     setBrandCheckList(updatedState);
+    //     let queryObj = getQueryToObject()
+    //     queryObj.brand = updatedState.join(',')
+    //     if (updatedState.length === 0) {
+    //         delete queryObj.brand
+    //     }
+    //     setQuery(queryObj);
+    // };
 
     const onChangeBrand = (list) => {
         setBrandCheckList(list);
@@ -120,8 +119,21 @@ const ProductCateMore = () => {
 
     //Fetch Data
     let queryFilterTxt = ''
-    if (params.category !== 'san-pham-moi') {
-        queryFilterTxt = `filters[idCategories][slug]=${params.slug}`
+    let category = ''
+
+    if (params.category) {
+        category = params.category
+    } else {
+        category = query.get('cat')
+    }
+
+    if (category && category !== 'san-pham-moi') {
+        queryFilterTxt = `&filters[idCategories][slug]=${category}`
+    }
+
+    let txtSearch = query.get('name')
+    if (txtSearch) {
+        queryFilterTxt += `&filters[name][$contains]=${txtSearch}`
     }
 
     if (distancePrice.minPrice) {
@@ -144,73 +156,90 @@ const ProductCateMore = () => {
     return (
         <div className='container mt-3'>
             <Row justify="space-between">
-                <Col span={12}>
-                    <h2 className='fw-bold'>{data[0]?.attributes?.idCategories?.data[0]?.attributes?.name} <small style={{ fontSize: '14px', opacity: '0.8' }}>(Tổng {data.length} sản phẩm)</small></h2>
+                <Col span={24}>
+                    <h2 className='fw-bold'>
+                        {txtSearch ? <h2 className='fw-bold'>Search: {txtSearch}</h2>
+                            : (childData?.data?.[0]?.attributes?.idCategories?.data[0]?.attributes?.name
+                                ? childData?.data?.[0]?.attributes?.idCategories?.data[0]?.attributes?.name : null)
+                        }
+                        <small style={{ fontSize: '14px', opacity: '0.8' }}>(Total {childData?.data?.length} items)</small></h2>
                 </Col>
             </Row>
-            <Row justify={'space-between'}>
-                <Col span={5}>
-                    <h5 className='text-center p-2' style={{ border: '1px solid #d9d9d9', borderRadius: '10px' }} >Lọc sản phẩm</h5>
+            <Row justify={'space-between'} gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                <Col xs={24} md={5} style={{ marginBottom: 15 }}>
+                    <h5 className='text-center p-2' style={{ border: '1px solid #d9d9d9', borderRadius: '10px' }} >Filter</h5>
                     <div>
-                        <h5 className='fw-bold mt-4'>HÃNG SẢN XUẤT</h5>
+                        <h5 className='fw-bold mt-4'>BRAND</h5>
                         <div>
-                            <Checkbox indeterminate={indeterminate} onChange={onChangeAllBrand} checked={checkAll}>
+                            {/* <Checkbox indeterminate={indeterminate} onChange={onChangeAllBrand} checked={checkAll}>
                                 Check all
-                            </Checkbox>
+                            </Checkbox> */}
                             <Row className='my-3'>
                                 <CheckboxGroup options={optionsWithCount} value={brandCheckList} onChange={onChangeBrand} />
                             </Row>
                         </div>
                     </div>
                     <div>
-                        <h5 className='fw-bold mt-4'>Sắp xếp</h5>
+                        <h5 className='fw-bold mt-4'>SORT</h5>
                         <Select
                             value={sortPrice}
                             onChange={handleSortPricechange}
                             options={[{
-                                label: 'Giá tăng dần',
+                                label: 'Icrease',
                                 value: 'asc'
                             }, {
-                                label: 'Giá giảm dần',
+                                label: 'Decrease',
                                 value: 'desc'
                             }]}
                         ></Select>
                     </div>
                     <div className='mt-4'>
-                        <h5 style={{ fontWeight: 'bold' }}>KHOẢNG GIÁ</h5>
+                        <h5 style={{ fontWeight: 'bold' }}>PRICE</h5>
                         <Form
                             name="price-form"
                             onFinish={handleMinMaxChange}
                             form={formPriceCondition}
                         >
                             <Row justify={'center'}>
-                                <Col span={11}>
+                                <Col xs={24} md={11}>
                                     <Form.Item
                                         name="minPrice"
-                                    ><Input placeholder='Giá thấp nhất' />
+                                    ><Input placeholder='Min' />
                                     </Form.Item>
                                 </Col>
-                                <Col span={2} style={{ textAlign: 'center', marginTop: 5 }}>
+                                <Col xs={0} md={2} style={{ textAlign: 'center', marginTop: 5 }}>
                                     <ArrowRightOutlined />
                                 </Col>
-                                <Col span={11}>
+                                <Col xs={24} md={11}>
                                     <Form.Item
                                         name="maxPrice"
-                                    ><Input placeholder='Giá cao nhất' />
+                                    ><Input placeholder='Max' />
                                     </Form.Item>
                                 </Col>
                             </Row>
-                            <Button htmlType='submit'>Lọc</Button>
-                            <Button onClick={handleResetFilter} style={{ marginLeft: '15px' }} >Xóa Lọc</Button>
+                            <Button htmlType='submit'>Filter</Button>
+                            <Button onClick={handleResetFilter} style={{ marginLeft: '15px' }} >Delete Filter</Button>
                         </Form>
                     </div>
+                    <div>
+                        <h5 className='fw-bold mt-4'>CATEGORY</h5>
+                        <Row>
+                            {categoriesList?.map((item, index) => (
+                                <Col xs={12} md={24}>
+                                    <Link Link to={`/category/${item?.attributes?.slug}`}>
+                                        {item?.attributes?.name}
+                                    </Link>
+                                </Col>
+                            ))}
+                        </Row>
+                    </div>
                 </Col >
-                <Col span={18}>
-                    <ProductList query={queryFilterTxt} />
+                <Col xs={24} md={18}>
+                    <ProductList query={queryFilterTxt} transferDataToParent={setChildData} />
                 </Col >
             </Row >
         </div >
     );
 };
 
-export default ProductCateMore;
+export default ProductCategories;

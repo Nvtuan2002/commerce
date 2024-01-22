@@ -4,6 +4,7 @@ import Footer from './Footer';
 import { Outlet } from 'react-router-dom';
 import { Layout, theme } from 'antd';
 const { Content } = Layout;
+import './Layout.css';
 
 const BaseLayout = () => {
 
@@ -16,7 +17,7 @@ const BaseLayout = () => {
             backgroundColor: colorBgContainer,
             borderRadius: borderRadiusLG,
         }}>
-            <Header></Header>
+            <Header className='header'></Header>
             <Content className='container-lg'>
                 <Outlet></Outlet>
             </Content>

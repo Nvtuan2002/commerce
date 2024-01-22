@@ -1,19 +1,48 @@
 import React from 'react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Row, Col, Button, Form, Input, InputNumber, Select } from 'antd'
+import { Row, Col, Button, Form, Input, Select } from 'antd'
 import { get64City } from '@/services/64City';
 const { Option } = Select;
 
 
 const Checkout = () => {
     const cart = useSelector((state) => state.cart)
-    const user = useSelector((state) => state.auth.user)
     const [form] = Form.useForm();
+    const [address, setAddress] = useState({
+        province: [],
+        district: [],
+        village: [],
+    })
 
-    useEffect(async () => {
-        const { data } = await get64City();
-    }, []);
+    const [optionValue, setOptionValue] = useState({
+        province: 'Chọn Thành Phố',
+        district: 'Chọn Quận',
+        village: 'Chọn Phường'
+    });
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const { data } = await get64City();
+
+            if (optionValue.province === 'Chọn Thành Phố') {
+                const tinh = data?.map((item) => item?.name);
+                setAddress(prevAddress => ({ ...prevAddress, province: tinh, district: [], village: [] }));
+            }
+
+            if (optionValue.province != 'Chọn Thành Phố' && optionValue.district == 'Chọn Quận') {
+                const huyen = data?.find((item) => item?.name === optionValue.province)?.districts;
+                setAddress(prevAddress => ({ ...prevAddress, district: huyen, village: [] }));
+            }
+
+            if (optionValue.district != 'Chọn Quận' && optionValue.village == 'Chọn Phường') {
+                const xa = data?.find((item) => item?.name === optionValue.province)?.districts?.find((item) => item?.name === optionValue.district)?.wards;
+                setAddress(prevAddress => ({ ...prevAddress, village: xa }));
+            }
+        };
+        fetchData();
+    }, [optionValue.province, optionValue.district, optionValue.village]);
 
     var total = 0;
     const itemList = (item, index) => {
@@ -43,6 +72,7 @@ const Checkout = () => {
         labelCol: {
             span: 8,
         },
+        labelAlign: 'left',
         wrapperCol: {
             span: 16,
         },
@@ -59,23 +89,12 @@ const Checkout = () => {
         },
     };
 
-    const prefixSelector = (
-        <Form.Item name="prefix" noStyle>
-            <Select
-                style={{
-                    width: 70,
-                }}
-            >
-                <Option value="84">+84</Option>
-                <Option value="15">+15</Option>
-            </Select>
-        </Form.Item>
-    );
-
     const onFinish = (values) => {
         console.log(values);
     };
 
+    console.log(optionValue);
+    console.log(address);
 
     return (
         <>
@@ -86,35 +105,32 @@ const Checkout = () => {
                     name="nest-messages"
                     onFinish={onFinish}
                     style={{
-                        maxWidth: 600,
+                        maxWidth: 400,
                     }}
                     validateMessages={validateMessages}
                     form={form}
-                    initialValues={{
-                        prefix: '84',
-                    }}
+
                 >
                     <Form.Item
                         name={['user', 'name']}
                         label="Full Name"
-                        rules={[
-                            {
-                                required: true,
-                            },
-                        ]}
+                    // rules={[
+                    //     {
+                    //         required: true,
+                    //     },
+                    // ]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item name={['user', 'phone']} label="Phone Number"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Please input your phone number!',
-                            },
-                        ]}
+                    // rules={[
+                    //     {
+                    //         required: true,
+                    //         message: 'Please input your phone number!',
+                    //     },
+                    // ]}
                     >
                         <Input
-                            addonBefore={prefixSelector}
                             style={{
                                 width: '100%',
                             }}
@@ -124,17 +140,96 @@ const Checkout = () => {
                         <Input />
                     </Form.Item>
                     <Form.Item
+                        key="province"
+                        name={['address', 'province']}
+                        label="City"
+                    // rules={[
+                    //     {
+                    //         required: true,
+                    //         message: 'Province is required',
+                    //     },
+                    // ]}
+                    >
+                        <Select
+                            value={optionValue.province}
+                            onChange={(selectedProvince) => {
+                                setOptionValue({
+                                    province: selectedProvince,
+                                    district: 'Chọn Quận',
+                                    village: 'Chọn Phường'
+                                });
+                                form.setFieldValue({
+                                    ['address.district']: 'Chọn Quận',
+                                    ['address.village']: 'Chọn Phường'
+                                });
+                            }}
+                        >
+                            {address?.province?.map((item, index) => {
+                                return <Option key={index} value={item}>{item}</Option>
+                            })}
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        key="district"
+                        name={['address', 'district']}
+                        label="District"
+                    >
+                        <Select
+                            value={optionValue.district}
+                            onChange={(selectedDistrict) => {
+                                setOptionValue({
+                                    ...optionValue,
+                                    district: selectedDistrict,
+                                    village: 'Chọn Phường'
+                                });
+                                form.setFieldsValue({
+                                    ['address.village']: 'Chọn Phường'
+                                });
+                            }}
+                        >
+                            {address?.district?.map((item, index) => {
+                                return <Option key={index} value={item?.name}>{item?.name}</Option>
+                            })}
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        name={['address', 'village']}
+                        label="Village"
+                    >
+                        <Select
+                            value={optionValue.village}
+                            onChange={(selectedVillage) => {
+                                setOptionValue({
+                                    ...optionValue,
+                                    village: selectedVillage
+                                });
+                            }}
+                        >
+                            {address?.village?.map((item, index) => {
+                                return <Option key={index} value={item?.name}>
+                                    {item?.name}
+                                </Option>
+                            }
+                            )}
+                        </Select>
+                    </Form.Item>
+
+                    <Form.Item name={['address', 'address']} label="address">
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
                         wrapperCol={{
                             ...layout.wrapperCol,
-                            offset: 8,
                         }}
+                        style={{ textAlign: 'center' }}
                     >
                         <Button type="primary" htmlType="submit">
                             Submit
                         </Button>
                     </Form.Item>
+
                 </Form>
-            </Col>
+            </Col >
             <Col>
                 <Col >
                     <h4 className="text-primary">Your cart</h4>
@@ -143,7 +238,6 @@ const Checkout = () => {
                 <Col>
                     <ul className="list-group mb-3">
                         {cart.map(itemList)}
-
                         <li className="list-group-item d-flex justify-content-between">
                             <span>Total (VNĐ)</span>
                             <strong>{formatPrice(total)}</strong>
