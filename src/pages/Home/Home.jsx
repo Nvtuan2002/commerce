@@ -24,6 +24,7 @@ const Home = () => {
         background: '#364d79',
         outline: 'none',
     };
+    
     let dropdownMenuComponent = dropdownTabs?.map((item) => {
         let megamenuItems = item?.attributes?.section?.map((megaItem, index) => {
             return <li key={megaItem?.id} className="mega-menu-items">

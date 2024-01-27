@@ -15,7 +15,7 @@ import { useWindowSize } from "@uidotdev/usehooks";
 import SearchComponent from "../Search/SearchComponent";
 
 const Header = () => {
-    const state = useSelector((state) => state.cart);
+    const state = useSelector((state) => state.cart.productList);
     const token = useSelector((state) => state.auth.token);
     const nav = useNavigate()
     const size = useWindowSize();

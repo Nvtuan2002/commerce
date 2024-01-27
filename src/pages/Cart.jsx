@@ -1,21 +1,28 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { qtyItem, deleteItem } from '@/redux/Cart';
+import { addItem, deleteItem, editItem } from '@/redux/Cart';
 import { Link } from 'react-router-dom'
 import { InputNumber, Empty, Button, Table, Row, Col } from 'antd';
+import { useFetch } from '@/customHook/useFetch';
 
 const Cart = () => {
-    const state = useSelector((state) => state.cart);
+    const productList = useSelector((state) => state.cart.productList);
     const token = useSelector((state) => state.auth.token);
     const dispatch = useDispatch()
 
-    const handleClose = (item) => {
-        console.log(item);
-        dispatch(deleteItem(item))
+    let query = productList?.reduce((txt, item, index) => {
+        return txt + `filters[id][$in][${index}]=${item.id}&`
+    }, '')
+
+    let { data } = productList.length && useFetch(`/products`, `${query}`);
+    console.log(data);
+
+    const delToCart = (idDel) => {
+        // dispatch(deleteItem(idDel))
     }
 
-    const editqty = (item) => {
-        dispatch(qtyItem(item))
+    const editToCart = ({ ID, values }) => {
+        // dispatch(editItem({ ID, values }))
     };
 
     const formatPrice = (price) => {
@@ -50,20 +57,31 @@ const Cart = () => {
             title: 'Action',
             dataIndex: 'action',
             render: (_, record) => (
-                <Button onClick={() => handleClose(record)}>Delete</Button>
+                <Button onClick={() => delToCart(record.id)}>Delete</Button>
             ),
         },
     ];
 
-    const data = state?.map((item) => {
+    const dataTH = data?.map((item) => {
         return {
+            key: item.id,
             id: item.id,
-            product: <img src={`https:backoffice.nodemy.vn${item?.attributes?.image?.data[0]?.attributes?.url}`} alt={item.title} height="200px" width="180px" />,
+            product: <div style={{display: 'inline-flex', alignItems: 'center'}}>
+                <img src={`${import.meta.env.VITE_BASE_API_URL}${item?.attributes?.image?.data[0]?.attributes?.url}`} alt={item.title} height="120px" width="150px" style={{borderRadius: '5px'}} />
+                <p className="fw-bold" style={{marginLeft: 10, width: '50%'}}>{item?.attributes?.name}</p>
+            </div>,
             price: `${formatPrice(item?.attributes?.price) + ' VNĐ'}`,
-            quantity: <InputNumber min={1} max={99} value={item.qty} onChange={(values) => {
-                editqty({ ...item, qty: values })
-            }} />,
-            subtotal: `${formatPrice(item.qty * item?.attributes?.price) + ' VNĐ'}`,
+            quantity: <InputNumber
+                min={1} max={99}
+                defaultValue={productList.find((p) => p.id === item.id)?.quantity || 1}
+                onChange={(values) => {
+                    // editToCart(values)
+                    let ID = item?.id
+                    console.log({ ID, values });
+                }}
+            />,
+            subtotal: `${formatPrice((productList.find((p) => p.id === item.id)?.quantity || 1) * item?.attributes?.price) + ' VNĐ'}`,
+            action: <Button onClick={() => delToCart(item?.id)}>Delete</Button>
         }
     });
 
@@ -99,7 +117,7 @@ const Cart = () => {
                         }}
                         scroll={{ x: 10 }}
                         columns={columns}
-                        dataSource={data}
+                        dataSource={dataTH}
                         pagination={false}
                     />
                 </Col>
@@ -114,9 +132,9 @@ const Cart = () => {
             <Row style={{ textAlign: 'center' }}>
                 <Col sm={24} md={24} className="display-6 fw-bold my-3">Shoping Cart</Col>
                 <Col sm={24} md={24}>
-                    {!token && state.length === 0 && emptyCart()}
-                    {state.length !== 0 && cartItems()}
-                    {state.length !== 0 && button()}
+                    {!token && productList?.length === 0 && emptyCart()}
+                    {productList?.length !== 0 && cartItems()}
+                    {productList?.length !== 0 && button()}
                 </Col>
             </Row >
         </>

@@ -4,7 +4,6 @@ import { persistStore, persistReducer } from 'redux-persist'
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import storage from 'redux-persist/lib/storage'
 
-
 // Kết hợp các reducer thành rootReducer
 const rootReducers = combineReducers({
   cart: cartReducer,

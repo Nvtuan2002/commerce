@@ -1,45 +1,32 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = [];
+const initialState = {
+    productList: [],
+};
 
 export const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
         addItem: (state, action) => {
-            const product = action.payload;
-            const exist = state.find((item) => item.id === product.id);
+            const { id, quantity, quantityAvailable } = action.payload;
+            const exist = state.productList.find((item) => item.id === id);
             if (exist) {
-                return state.map((item) =>
-                    item.id === product.id ? { ...exist, qty: exist.qty + 1 } : item
-                );
+                //tăng số lượng
+                let newQuantity = exist.quantity + quantity;
+                exist.quantity = newQuantity > quantityAvailable ? quantityAvailable : newQuantity;
             } else {
-                return [...state, { ...product, qty: 1 }];
-            }
-        },
-        deleteItem: (state, action) => {
-            const product = action.payload;
-            const exist = state.find((item) => item.id === product.id);
-            if (exist.qty === 1) {
-                return state.filter((item) => item.id !== product.id);
-            }
-            else {
-                return state.map((item) =>
-                    item.id === product.id ? { ...exist, qty: exist.qty - 1 } : item
-                );
-            }
-        },
-        qtyItem: (state, action) => {
-            const product = action.payload;
-            const exist = state.find((item) => item.id === product.id);
-            if (exist) {
-                return state.map((item) =>
-                    item.id === product.id ? { ...exist, qty: product.qty } : item
-                );
+                //thêm mới
+                state.productList.push(action.payload);
             }
         }
+    },
+    deleteItem: (state, action) => {
+    },
+    editItem: (state, action) => {
+
     }
 });
 
-export const { addItem, deleteItem, qtyItem } = cartSlice.actions;
+export const { addItem, deleteItem, editItem } = cartSlice.actions;
 export default cartSlice.reducer;

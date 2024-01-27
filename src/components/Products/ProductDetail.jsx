@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton'
 import { useDispatch } from 'react-redux';
-import { addItem, deleteItem } from '@/redux/Cart';
+import { addItem } from '@/redux/Cart';
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
-import { Col, Row, InputNumber } from 'antd';
+import { Col, Row, InputNumber, Form } from 'antd';
 import { useFetch } from '@/customHook/useFetch';
 import Markdown from 'react-markdown';
 import '@/components/Products/products.scss';
@@ -15,10 +15,16 @@ import ProductCate from './ProductCate';
 const Product = () => {
 
     const params = useParams()
+    const [form] = Form.useForm();
     const { data, loading } = useFetch(`/products/${params.slug}`);
+
     const dispatch = useDispatch()
-    const addProduct = (data) => {
-        dispatch(addItem(data))
+    const addtoCart = () => {
+        dispatch(addItem({
+            id: data?.id,
+            quantity: form.getFieldValue('quantity'),
+            quantityAvailable: data?.attributes?.quantityAvailable
+        }))
     }
 
     const Loading = () => {
@@ -98,16 +104,25 @@ const Product = () => {
                         </h3>
                         <h5>
                             Số lượng:
-                            <InputNumber
-                                defaultValue={1}
-                                min={1}
-                                max={data?.attributes?.quantityAvailable || 1}
+                            <Form
+                                form={form}
                             >
-                            </InputNumber>
+                                <Form.Item
+                                    name='quantity'
+                                    initialValue={1}
+                                >
+                                    <InputNumber
+                                        defaultValue={1}
+                                        min={1}
+                                        max={data?.attributes?.quantityAvailable || 1}
+                                    >
+                                    </InputNumber>
+                                </Form.Item>
+                            </Form>
                         </h5>
                         <button className='btn btn-outline-dark px-4 py-2 my-5'
                             onClick={() => {
-                                addProduct(data)
+                                addtoCart()
                             }}>Add to Cart</button>
                         <Link to='/cart' className='btn btn-dark ms-2 px-3 py-2'>Go to Cart</Link>
                     </Col>
