@@ -376,7 +376,7 @@
 // export default Checkout
 import { useSelector, useDispatch } from "react-redux"
 import { useFetch } from '@/customHook/useFetch'
-import ProductTable from '@/components/products/ProductTable'
+import ProductTable from '@/components/Products/ProductTable'
 import { Button, Row, Col, Form, Input, Breadcrumb } from "antd"
 import { useEffect } from "react"
 import { saveUserThunk } from "@/redux/auth/thunk"
