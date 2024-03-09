@@ -1,15 +1,13 @@
 import React from 'react'
 import { useState } from 'react'
-import { Register } from '../services/Auth/Register'
-import { useNavigate } from 'react-router-dom'
+import { register } from '@/services/auth'
 import { Button, Modal, Input, Form, Checkbox } from 'antd';
+import useNotification from '@/customHook/useNotify'
 
 const Signup = () => {
 
-    const nav = useNavigate()
-
-
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { contextHolder, infoNotify, errorNotify } = useNotification()
     const showModal = () => {
         setIsModalOpen(true);
     };
@@ -22,18 +20,27 @@ const Signup = () => {
 
 
     const onFinish = async (values) => {
-        const response = await Register(values)
-        if (response) {
-            console.log('Đăng ký thành công');
-            setIsModalOpen(false);
+        try {
+            await register(values)
+            infoNotify('topRight', 'Thanh Cong', 'Ban da tao thanh cong')
+            setIsModalOpen(false)
+        } catch ({ response }) {
+            var { error } = response.data
+            errorNotify('topRight', 'Loi dang ky', error.message)
         }
     }
+
+    const onFinishFailed = (errorInfo) => {
+        console.log('Failed:', errorInfo);
+        errorNotify('topRight', 'Loi dang ky', 'Khong thanh cong')
+    };
 
     return (
         <>
             <Button type="primary" onClick={showModal}>
                 REGISTER
             </Button>
+            {contextHolder}
             <Modal title="REGISTER" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
                 <Form
                     labelAlign='left'
@@ -51,6 +58,7 @@ const Signup = () => {
                         remember: true,
                     }}
                     onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
                 >
                     <Form.Item
                         label="Username"

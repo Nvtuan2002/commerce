@@ -7,6 +7,9 @@ import { router } from './router';
 import { PersistGate } from 'redux-persist/integration/react'
 import { persistor, store } from './redux/store'
 import '@/configs/axios'
+import { Suspense } from 'react'
+import { Result } from 'antd'
+import placeholderLoading from '@/assets/placeholder-loading.gif'
 
 
 function App() {
@@ -15,7 +18,13 @@ function App() {
     <>
       <Provider store={store}>
         <PersistGate persistor={persistor}>
-          <RouterProvider router={router} />
+          <Suspense fallback={
+            <Result
+              extra={<img src={placeholderLoading} />}
+            />
+          }>
+            <RouterProvider router={router} />
+          </Suspense>
         </PersistGate>
       </Provider>
     </>

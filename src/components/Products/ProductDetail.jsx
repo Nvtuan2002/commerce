@@ -11,6 +11,7 @@ import { useFetch } from '@/customHook/useFetch';
 import Markdown from 'react-markdown';
 import '@/components/Products/products.scss';
 import ProductCate from './ProductCate';
+import { Breadcrumb } from 'antd'
 
 const Product = () => {
 
@@ -70,9 +71,22 @@ const Product = () => {
         return priceWithoutSymbol.trim();
     };
 
+    let breadcrumbItems = [{
+        title: <Link to='/'>Trang chủ</Link>
+    }, {
+        title: <Link to='/category/san-pham-moi'>Sản phẩm</Link>
+    }, {
+        title: <Link to={`#`}>{data?.attributes?.name}</Link>
+    }]
+
     const ShowProduct = () => {
         return (<>
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} style={{ marginBottom: '36px' }}>
+                <Col span={24}>
+                    <Breadcrumb
+                        items={breadcrumbItems}
+                    />
+                </Col>
                 <Row className='display-6 fw-bold'>{data?.attributes?.name}
                 </Row>
 

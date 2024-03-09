@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux"
-import { LogoutRedux } from "../redux/Auth"
+import { LogoutRedux } from "@/redux/Auth"
 import { Button } from 'antd';
 
 const Logout = () => {

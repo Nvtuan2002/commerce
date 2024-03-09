@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Row, Col, Input, Form, Select, Checkbox, Button, Collapse } from 'antd';
+import { Row, Col, Input, Form, Select, Checkbox, Button, Collapse, Breadcrumb } from 'antd';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useFetch } from '@/customHook/useFetch';
 import ProductList from '@/components/Products/ProductList';
@@ -153,8 +153,27 @@ const ProductCategories = () => {
         })
     }
 
+    let breadcrumbItems = [{
+        title: <Link to='/'>Trang chủ</Link>
+    }]
+    if (window.location.href.includes('danh-muc')) {
+        breadcrumbItems.push({
+            title: <Link to='#'>Danh mục</Link>
+        }, {
+            title: <Link to='#'>{params.category}</Link>
+        })
+
+    } else {
+        breadcrumbItems.push({
+            title: <Link to='#'>Tìm kiếm</Link>
+        })
+    }
+
     return (
         <div className='container mt-3'>
+            <Breadcrumb
+                items={breadcrumbItems}
+            />
             <Row justify="space-between">
                 <Col span={24}>
                     <h2 className='fw-bold'>

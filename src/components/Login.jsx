@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { login } from '../services/Auth/Login'
-import { useDispatch } from 'react-redux'
-import { LoginRedux } from '../redux/Auth'
+import { useDispatch, useSelector } from 'react-redux'
+import useNotification from '@/customHook/useNotify'
+import { emailRule, passwordRule } from '@/common/rule';
 import { Button, Modal, Input, Form, Checkbox } from 'antd';
+import { loginThunk } from '@/redux/Auth/thunk';
 
 const Login = () => {
     const dispatch = useDispatch()
-
+    const loading = useSelector(state => state.auth.loading)
+    const { contextHolder, infoNotify, errorNotify } = useNotification()
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
         setIsModalOpen(true);
@@ -19,20 +21,33 @@ const Login = () => {
     };
 
     const onFinish = async (values) => {
-        const response = await login(values)
-        if (response) {
-            dispatch(LoginRedux({
-                token: response.data.jwt,
-                user: response.data.user,
-            }));
+        try {
+            const data = await dispatch(loginThunk(values));
+            console.log(data); // Kiểm tra giá trị của data
+            if (data.error) {
+                throw data.error;
+            } else {
+                setIsModalOpen(false);
+                infoNotify('topRight', 'Thanh Cong', 'Ban da tao thanh cong');
+            }
+        } catch (error) {
+            console.error(error); // In ra lỗi nếu có
+            errorNotify('topRight', 'Loi dang nhap', error.message);
         }
-    }
+    };
+    
+
+    const onFinishFailed = (errorInfo) => {
+        console.log('Failed:', errorInfo);
+        errorNotify('topRight', 'Loi dang nhap', 'Khong thanh cong')
+    };
 
     return (
         <>
             <Button className='me-2' type="primary" onClick={showModal}>
                 LOGIN
             </Button>
+            {contextHolder}
             <Modal title="LOGIN" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
                 <Form
                     name="basic"
@@ -43,16 +58,12 @@ const Login = () => {
                         remember: true,
                     }}
                     onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
                 >
                     <Form.Item
                         label="Username"
                         name="identifier"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Please input your username!',
-                            },
-                        ]}
+                        rules={emailRule}
                     >
                         <Input />
                     </Form.Item>
@@ -60,12 +71,7 @@ const Login = () => {
                     <Form.Item
                         label="Password"
                         name="password"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Please input your password!',
-                            },
-                        ]}
+                        rules={passwordRule}
                     >
                         <Input.Password />
                     </Form.Item>
@@ -83,7 +89,7 @@ const Login = () => {
                             span: 16,
                         }}
                     >
-                        <Button type="primary" htmlType="submit" size='large'>
+                        <Button disabled={loading} type="primary" htmlType="submit" size='large'>
                             Submit
                         </Button>
                     </Form.Item>

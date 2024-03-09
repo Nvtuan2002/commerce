@@ -4,7 +4,7 @@ import Footer from './Footer';
 import { Outlet } from 'react-router-dom';
 import { Layout, theme } from 'antd';
 const { Content } = Layout;
-import './Layout.css';
+import './layout.scss';
 
 const BaseLayout = () => {
 

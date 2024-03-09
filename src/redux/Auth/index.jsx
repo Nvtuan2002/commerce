@@ -1,23 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
+import auth from './thunk'
 
 const initialState = {
     token: '',
-    user: {}
+    user: {},
+    loading: false,
 };
 
 export const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        LoginRedux: (state, action) => {
-            state.token = action.payload.token;
-            state.user = action.payload.user;
-        },
         LogoutRedux: (state) => {
             state.token = '';
             state.user = {};
+            state.loading = false;
         },
     },
+    extraReducers: auth
 });
 
 export const { LoginRedux, LogoutRedux } = authSlice.actions;

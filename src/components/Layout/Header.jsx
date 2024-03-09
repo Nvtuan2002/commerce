@@ -6,7 +6,7 @@ import { Menu, Row, Col, Button, Space, Drawer, Radio } from 'antd';
 import Login from "../Login";
 import Signup from "../Signup";
 import Logout from "../Logout";
-import './Layout.css';
+import './layout.scss';
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
@@ -16,10 +16,9 @@ import SearchComponent from "../Search/SearchComponent";
 
 const Header = () => {
     const state = useSelector((state) => state.cart.productList);
-    const token = useSelector((state) => state.auth.token);
+    const user = useSelector((state) => state.auth);
     const nav = useNavigate()
     const size = useWindowSize();
-
 
     const HeaderVertical = () => {
         const [open, setOpen] = useState(false);
@@ -118,7 +117,7 @@ const Header = () => {
                                     justifyContent: 'center',
                                 }}
                             >
-                                {token ? <Logout /> : <Row><Login /> <Signup /></Row>}
+                                {user?.token ? <Row><h3>{user?.user?.username}</h3><Logout /></Row> : <Row><Login /> <Signup /></Row>}
                                 <Button className="d-flex" type="primary" danger onClick={() => {
                                     nav('/cart')
                                 }}>
@@ -177,7 +176,7 @@ const Header = () => {
                 <Col xs={24} sm={12} md={10} lg={8} xl={8}>
                     <Row align='end'>
                         <Space align="start">
-                            {token ? <Logout /> : <Row><Login /> <Signup /></Row>}
+                            {user?.token ? <Row><h3>{user?.user?.username}</h3><Logout /></Row> : <Row><Login /> <Signup /></Row>}
                             <Button className="d-flex" type="primary" danger onClick={() => {
                                 nav('/cart')
                             }}>

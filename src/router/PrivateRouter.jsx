@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom"
 
 export default function PrivateRouter(props) {
     var token = useSelector(state => state.auth.token)
@@ -6,7 +7,6 @@ export default function PrivateRouter(props) {
     if (token) {
         return props.children
     } else {
-        alert('Bạn chưa đăng nhập')
-        window.location.href = '/'
+        return <Navigate to='/'></Navigate>
     }
 }
