@@ -379,7 +379,7 @@ import { useFetch } from '@/customHook/useFetch'
 import ProductTable from '@/components/Products/ProductTable'
 import { Button, Row, Col, Form, Input, Breadcrumb } from "antd"
 import { useEffect } from "react"
-import { saveUserThunk } from "@/redux/auth/thunk"
+import { saveUserThunk } from "@/redux/Auth/thunk"
 import { addOrder } from '@/services/order'
 import { useNavigate, Link } from "react-router-dom"
 import { clearCart } from '@/redux/Cart'
